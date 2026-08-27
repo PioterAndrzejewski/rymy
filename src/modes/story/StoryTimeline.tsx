@@ -12,7 +12,9 @@ export function buildStoryPlan(
   for (let i = 0; i < keywords.length; i++) {
     for (let k = 0; k < barsPerKeyword; k++) {
       const idx = introBars + i * barsPerKeyword + k;
-      const isCue = k === 0; // the word lands on the first bar of its group
+      // The word lands on the LAST bar of its group: the bars before it are
+      // yours to fill, and the keyword is what you have to rhyme into.
+      const isCue = k === barsPerKeyword - 1;
       bars.push({
         index: idx,
         kind: isCue ? 'word' : 'empty',
@@ -38,10 +40,10 @@ export function StoryTimeline({
     <Paper withBorder p="sm" radius="md">
       <Group gap="md" mb={8}>
         <Legend kind="intro" label="intro" />
-        <Legend kind="empty" label="rozwijasz" />
-        <Legend kind="word" label="nowe słowo" />
+        <Legend kind="empty" label="twoja linijka" />
+        <Legend kind="word" label="tu pada słowo" />
       </Group>
-      <Box ref={scrollerRef} style={{ overflowX: 'auto' }}>
+      <Box ref={scrollerRef} className="rymy-hscroll">
         <Group gap={4} wrap="nowrap" style={{ minWidth: 'min-content' }}>
           {plan.map((b) => {
             const isCurrent = b.index === currentBar;

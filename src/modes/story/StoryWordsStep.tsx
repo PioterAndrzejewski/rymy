@@ -22,8 +22,9 @@ const LIMIT_CHOICES = [0, 30, 60, 90];
 export function StoryWordsStep({ config, patch }: Props) {
   const { track } = useSession();
   // Sample only — the real draw happens when the exercise starts.
-  const [sample, setSample] = useState<string[]>(() => drawKeywords(config.level, 5));
-  useEffect(() => { setSample(drawKeywords(config.level, 5)); }, [config.level]);
+  const sampleTopic = config.topicMode === 'pick' ? config.topic : undefined;
+  const [sample, setSample] = useState<string[]>(() => drawKeywords(config.level, 5, sampleTopic));
+  useEffect(() => { setSample(drawKeywords(config.level, 5, sampleTopic)); }, [config.level, sampleTopic]);
 
   const introBars = track?.introBars ?? 0;
   const totalBars = introBars + config.slots * config.barsPerKeyword;
@@ -60,7 +61,7 @@ export function StoryWordsStep({ config, patch }: Props) {
           <ChoiceCard
             icon={<IconWand size={20} />}
             title="Wygeneruj automatycznie"
-            description="Słowa wylosują się przy starcie — zobaczysz je dopiero w fazie zapamiętywania."
+            description="Losujemy przy starcie: około 6 na 10 słów w klimacie tematu, reszta z poziomu — zobaczysz je dopiero w fazie zapamiętywania."
             selected={config.wordsMode === 'auto'}
             onSelect={() => patch({ wordsMode: 'auto' })}
           >
@@ -77,14 +78,14 @@ export function StoryWordsStep({ config, patch }: Props) {
               </Box>
               <Group gap={6} wrap="wrap" align="center">
                 <IconBulb size={14} color="var(--mantine-color-dimmed)" />
-                <Text size="xs" c="dimmed">przykłady:</Text>
+                <Text size="xs" c="dimmed">{sampleTopic ? 'przykłady dla tematu:' : 'przykłady:'}</Text>
                 {sample.map((w, i) => (
                   <Badge key={`${w}-${i}`} size="sm" variant="light" color="gray">{w}</Badge>
                 ))}
                 <Button
-                  size="compact-xs" variant="subtle" color="gray"
+                  size="sm" variant="subtle" color="gray"
                   leftSection={<IconRefresh size={12} />}
-                  onClick={() => setSample(drawKeywords(config.level, 5))}
+                  onClick={() => setSample(drawKeywords(config.level, 5, sampleTopic))}
                 >
                   inne
                 </Button>
@@ -106,10 +107,10 @@ export function StoryWordsStep({ config, patch }: Props) {
         <Stack gap="md">
           <Box>
             <Text size="sm" fw={500} mb={6}>Ile słów kluczy</Text>
-            <Group gap="xs">
+            <Group gap="xs" wrap="wrap">
               {SLOT_CHOICES.map((n) => (
                 <Button
-                  key={n} size="sm"
+                  key={n} size="md"
                   variant={config.slots === n ? 'filled' : 'default'}
                   color="brand"
                   onClick={() => patch({ slots: n })}
@@ -122,10 +123,10 @@ export function StoryWordsStep({ config, patch }: Props) {
 
           <Box>
             <Text size="sm" fw={500} mb={6}>Taktów na jedno słowo</Text>
-            <Group gap="xs">
+            <Group gap="xs" wrap="wrap">
               {BARS_CHOICES.map((n) => (
                 <Button
-                  key={n} size="sm"
+                  key={n} size="md"
                   variant={config.barsPerKeyword === n ? 'filled' : 'default'}
                   color="brand"
                   onClick={() => patch({ barsPerKeyword: n })}
@@ -141,10 +142,10 @@ export function StoryWordsStep({ config, patch }: Props) {
 
           <Box>
             <Text size="sm" fw={500} mb={6}>Czas na zapamiętanie</Text>
-            <Group gap="xs">
+            <Group gap="xs" wrap="wrap">
               {MEMORIZE_CHOICES.map((n) => (
                 <Button
-                  key={n} size="sm"
+                  key={n} size="md"
                   variant={config.memorizeSec === n ? 'filled' : 'default'}
                   color="brand"
                   onClick={() => patch({ memorizeSec: n })}

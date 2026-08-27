@@ -13,10 +13,12 @@ type Props = {
 /** Last wizard screen: everything at a glance before the exercise starts. */
 export function ReadyPanel({ items, headline, note, children }: Props) {
   return (
-    <Paper withBorder p="xl" radius="md" className="rymy-fade-up">
+    <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up">
       <Stack gap="lg">
         {headline && (
-          <Text size="28px" fw={800} lts="-0.02em" ta="center">{headline}</Text>
+          <Text ta="center" style={{ fontSize: 'clamp(22px, 7vw, 28px)', fontWeight: 800, letterSpacing: '-0.02em' }}>
+            {headline}
+          </Text>
         )}
         <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
           {items.map((it) => (
@@ -27,7 +29,7 @@ export function ReadyPanel({ items, headline, note, children }: Props) {
               border: '1px solid var(--mantine-color-dark-5)',
             }}>
               <Text size="10px" tt="uppercase" lts={0.8} c="dimmed">{it.label}</Text>
-              <Text size="lg" fw={600} lineClamp={1}>{it.value}</Text>
+              <Text size="lg" fw={600} lineClamp={2}>{it.value}</Text>
             </Box>
           ))}
         </SimpleGrid>

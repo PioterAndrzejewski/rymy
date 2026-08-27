@@ -24,12 +24,14 @@ export function RhymeFamily() {
   const patch = (p: Partial<FamilyConfig>) => setConfig((c) => ({ ...c, ...p }));
 
   const endings = useMemo(() => rhymeEndings(config.level), [config.level]);
-  const bankSize = useMemo(
+  const endingBank = useMemo(
     () => (config.ending === 'random'
-      ? 0
-      : loadLevel('pl', config.level).filter((w) => w.rhymeEnding === config.ending).length),
+      ? []
+      : loadLevel('pl', config.level).filter((w) => w.rhymeEnding === config.ending)),
     [config.ending, config.level],
   );
+  const bankSize = endingBank.length;
+  const sample = endingBank[0]?.text ?? '';
 
   const steps: StepDef[] = [
     {
@@ -51,11 +53,11 @@ export function RhymeFamily() {
 
   return (
     <Stack gap="lg" my="md">
-      <Group justify="space-between" align="end">
+      <Group justify="space-between" align="end" wrap="wrap" gap="xs">
         <div>
-          <Text size="26px" fw={800} lts="-0.02em">Wypluj się z rymów</Text>
+          <Text style={{ fontSize: 'clamp(22px, 6.5vw, 26px)', fontWeight: 800, letterSpacing: '-0.02em' }}>Wypluj się z rymów</Text>
           <Text c="dimmed" size="sm">
-            Jedna końcówka, zegar i tyle rymów, ile zdążysz wpisać. Bez podkładu.
+            Jedno słowo, zegar i tyle rymów do niego, ile zdążysz wpisać. Bez podkładu.
           </Text>
         </div>
         <Badge variant="light" color="brand" size="lg">krok {step + 1} / {steps.length}</Badge>
@@ -67,11 +69,13 @@ export function RhymeFamily() {
         <StepShell title="Wybierz końcówkę" description="Poziom decyduje o tym, jak duży jest bank podpowiedzi.">
           <Stack gap="md">
             <Section title="Poziom">
+              <Box className="rymy-hscroll">
               <SegmentedControl
                 value={String(config.level)}
                 onChange={(v) => patch({ level: Number(v) })}
                 data={Array.from({ length: MAX_LEVEL }, (_, i) => ({ value: String(i + 1), label: `Level ${i + 1}` }))}
               />
+              </Box>
             </Section>
 
             <Section title="Końcówka rymu">
@@ -110,7 +114,7 @@ export function RhymeFamily() {
               )}
               {config.ending !== 'random' && (
                 <Text size="xs" c="dimmed" mt="sm">
-                  W banku poziomu {config.level} jest {bankSize} słów z tą końcówką.
+                  W banku poziomu {config.level} jest {bankSize} słów z tą końcówką{sample ? `, np. ${sample}` : ''}.
                 </Text>
               )}
             </Section>
@@ -129,10 +133,10 @@ export function RhymeFamily() {
         <StepShell title="Czas i metronom" description="Ile trwa runda i czy chcesz mieć puls w tle.">
           <Stack gap="md">
             <Section title="Długość rundy">
-              <Group gap="xs">
+              <Group gap="xs" wrap="wrap">
                 {DURATIONS.map((sec) => (
                   <Button
-                    key={sec} size="sm"
+                    key={sec} size="md"
                     variant={config.seconds === sec ? 'filled' : 'default'}
                     color="brand"
                     onClick={() => patch({ seconds: sec })}
@@ -146,10 +150,10 @@ export function RhymeFamily() {
               </Text>
             </Section>
             <Section title="Metronom" hint="Puls pomaga trzymać flow, ale nie jest obowiązkowy.">
-              <Group gap="xs">
+              <Group gap="xs" wrap="wrap">
                 {BPMS.map((b) => (
                   <Button
-                    key={b} size="sm"
+                    key={b} size="md"
                     variant={config.bpm === b ? 'filled' : 'default'}
                     color="brand"
                     leftSection={b > 0 ? <IconMetronome size={14} /> : undefined}
@@ -171,6 +175,7 @@ export function RhymeFamily() {
             headline="Gotowy?"
             items={[
               { label: 'Końcówka', value: config.ending === 'random' ? 'losowa 🎲' : `-${config.ending}` },
+              ...(sample ? [{ label: 'Np. rym do', value: sample }] : []),
               { label: 'Poziom', value: `L${config.level}` },
               { label: 'Czas', value: fmtDuration(config.seconds) },
               { label: 'Metronom', value: config.bpm === 0 ? 'wyłączony' : `${config.bpm} BPM` },
@@ -179,10 +184,15 @@ export function RhymeFamily() {
           >
             <Paper withBorder p="md" radius="md" bg="rgba(255,255,255,0.02)">
               <Box ta="center">
-                <Text size="xs" c="dimmed" tt="uppercase" lts={1}>końcówka</Text>
-                <Text style={{ fontSize: 56, fontWeight: 800 }} c="brand.3">
-                  {config.ending === 'random' ? '?' : `-${config.ending}`}
+                <Text size="xs" c="dimmed" tt="uppercase" lts={1}>rymujesz do</Text>
+                <Text style={{ fontSize: 'clamp(36px, 12vw, 52px)', fontWeight: 800 }} c="brand.3">
+                  {config.ending === 'random' ? '?' : (sample || `-${config.ending}`)}
                 </Text>
+                {config.ending !== 'random' && (
+                  <Text size="xs" c="dimmed">
+                    końcówka -{config.ending} · słowo losowane po starcie
+                  </Text>
+                )}
               </Box>
             </Paper>
           </ReadyPanel>

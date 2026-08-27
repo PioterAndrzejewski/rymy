@@ -1,9 +1,10 @@
-import { Badge, Button, Group, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
-import { IconDice5, IconEyeOff, IconPencil } from '@tabler/icons-react';
+import { useState } from 'react';
+import { Badge, Button, Flex, Group, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
+import { IconDice5, IconEyeOff, IconPencil, IconRefresh } from '@tabler/icons-react';
 import { Section } from '@/components/wizard/StepShell';
 import { ChoiceCard } from '@/components/wizard/ChoiceCard';
-import { STORY_TOPICS } from '@/wordbank/pl/story-topics';
-import { randomTopic, type StoryConfig } from './config';
+import { randomTopics } from '@/wordbank/pl/story-topics';
+import { TOPIC_COUNT, randomTopic, type StoryConfig } from './config';
 
 type Props = {
   config: StoryConfig;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export function TopicStep({ config, patch }: Props) {
-  const suggestions = STORY_TOPICS.slice(0, 6);
+  const [suggestions, setSuggestions] = useState(() => randomTopics(6));
 
   return (
     <Stack gap="md">
@@ -25,33 +26,43 @@ export function TopicStep({ config, patch }: Props) {
             onSelect={() => patch({ topicMode: 'pick' })}
           >
             <Stack gap="xs">
-              <Group gap="xs" align="end" wrap="nowrap">
+              <Flex gap="xs" align={{ base: 'stretch', xs: 'end' }} direction={{ base: 'column', xs: 'row' }}>
                 <TextInput
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, minWidth: 0 }}
+                  size="md"
                   placeholder="np. spóźniony autobus"
                   value={config.topic}
                   onChange={(e) => patch({ topic: e.currentTarget.value })}
+                  enterKeyHint="done"
                 />
                 <Button
                   variant="default"
+                  size="md"
                   leftSection={<IconDice5 size={14} />}
                   onClick={() => patch({ topic: randomTopic() })}
                 >
                   Losuj
                 </Button>
-              </Group>
-              <Group gap={6} wrap="wrap">
+              </Flex>
+              <Group gap={6} wrap="wrap" align="center">
                 {suggestions.map((t) => (
                   <Badge
-                    key={t}
-                    variant={config.topic === t ? 'filled' : 'light'}
-                    color={config.topic === t ? 'brand' : 'gray'}
+                    key={t.text}
+                    variant={config.topic === t.text ? 'filled' : 'light'}
+                    color={config.topic === t.text ? 'brand' : 'gray'}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => patch({ topic: t })}
+                    onClick={() => patch({ topic: t.text })}
                   >
-                    {t}
+                    {t.text}
                   </Badge>
                 ))}
+                <Button
+                  size="compact-xs" variant="subtle" color="gray"
+                  leftSection={<IconRefresh size={12} />}
+                  onClick={() => setSuggestions(randomTopics(6))}
+                >
+                  inne
+                </Button>
               </Group>
             </Stack>
           </ChoiceCard>
@@ -64,7 +75,7 @@ export function TopicStep({ config, patch }: Props) {
             onSelect={() => patch({ topicMode: 'auto' })}
           >
             <Text size="xs" c="dimmed">
-              Losujemy z {STORY_TOPICS.length} tematów. Zobaczysz go razem ze słowami kluczami.
+              Losujemy z {TOPIC_COUNT} tematów. Zobaczysz go razem ze słowami kluczami.
             </Text>
           </ChoiceCard>
         </SimpleGrid>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActionIcon, Badge, Box, Button, Group, Paper, Progress, SimpleGrid, Stack, Switch, Text, TextInput,
+  ActionIcon, Badge, Box, Button, Flex, Group, Paper, Progress, SimpleGrid, Stack, Switch, Text, TextInput,
 } from '@mantine/core';
 import {
   IconPlayerPauseFilled, IconPlayerPlayFilled, IconRefresh, IconSettings, IconX,
@@ -21,7 +21,17 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     [config.ending, config.level],
   );
 
+  // The prompt is a concrete word, not a bare ending — you rhyme to something.
+  const pickSeed = useMemo(
+    () => (e: string) => {
+      const pool = e ? loadLevel('pl', config.level).filter((w) => w.rhymeEnding === e) : [];
+      return pool.length ? pool[Math.floor(Math.random() * pool.length)].text : '';
+    },
+    [config.level],
+  );
+
   const [ending, setEnding] = useState(pickEnding);
+  const [seed, setSeed] = useState(() => pickSeed(ending));
   const [entries, setEntries] = useState<string[]>([]);
   const [input, setInput] = useState('');
   const [shake, setShake] = useState(false);
@@ -68,8 +78,8 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   }, [config.bpm, running, done]);
 
   const bank = useMemo(
-    () => (ending ? loadLevel('pl', config.level).filter((w) => w.rhymeEnding === ending) : []),
-    [ending, config.level],
+    () => (ending ? loadLevel('pl', config.level).filter((w) => w.rhymeEnding === ending && w.text !== seed) : []),
+    [ending, seed, config.level],
   );
 
   // What the bank knows and the user didn't reach — the payoff of the round.
@@ -84,7 +94,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   function submit() {
     const value = input.trim().toLowerCase();
     if (!value) return;
-    if (entries.includes(value)) {
+    if (entries.includes(value) || value === seed.toLowerCase()) {
       setShake(true);
       window.setTimeout(() => setShake(false), 350);
       return;
@@ -99,7 +109,9 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     setRemaining(totalMs);
     setDone(false);
     setRunning(true);
-    if (newEnding) setEnding(pickEnding());
+    const next = newEnding ? pickEnding() : ending;
+    if (newEnding) setEnding(next);
+    setSeed(pickSeed(next));
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
@@ -108,13 +120,13 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
   if (done) {
     return (
-      <Paper withBorder p="xl" radius="md" className="rymy-fade-up" ta="center">
+      <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up" ta="center">
         <Stack gap="lg" align="center">
-          <Text size="32px" fw={800}>Czas minął ⏱</Text>
+          <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>Czas minął ⏱</Text>
           <Text c="dimmed">
-            końcówka <b>-{ending}</b> · {fmtDuration(config.seconds)}
+            rym do <b>{seed || `-${ending}`}</b> (-{ending}) · {fmtDuration(config.seconds)}
           </Text>
-          <Text style={{ fontSize: 72, fontWeight: 800 }} c="brand.3">{entries.length}</Text>
+          <Text style={{ fontSize: 'clamp(56px, 16vw, 72px)', fontWeight: 800 }} c="brand.3">{entries.length}</Text>
           <Text size="sm" c="dimmed" mt={-12}>rymów</Text>
           {entries.length > 0 && (
             <Group gap={6} justify="center" wrap="wrap" maw={720}>
@@ -127,7 +139,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
             <Paper withBorder p="md" radius="md" maw={720} w="100%" bg="rgba(255,255,255,0.02)">
               <Text size="sm" fw={700} mb={2}>O tym nie pomyślałeś</Text>
               <Text size="xs" c="dimmed" mb="sm">
-                {missed.length} słów z banku (poziom {config.level}) z końcówką -{ending}, których nie wpisałeś.
+                {missed.length} słów z banku (poziom {config.level}) rymujących się z „{seed}", których nie wpisałeś.
               </Text>
               <Group gap={6} justify="center" wrap="wrap">
                 {missed.map((w) => (
@@ -137,14 +149,14 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
             </Paper>
           )}
 
-          <Group>
+          <Stack gap="xs" w="100%" maw={360}>
             <Button size="md" color="brand" leftSection={<IconRefresh size={16} />} onClick={() => restart(config.ending === 'random')}>
               Jeszcze raz
             </Button>
             <Button size="md" variant="subtle" color="gray" leftSection={<IconSettings size={16} />} onClick={onExit}>
               Zmień ustawienia
             </Button>
-          </Group>
+          </Stack>
         </Stack>
       </Paper>
     );
@@ -152,57 +164,83 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
   return (
     <Stack gap="md">
-      <Paper withBorder p="md" radius="md">
-        <Group justify="space-between" wrap="wrap" gap="sm">
-          <Group gap="sm">
-            <ActionIcon
-              size={44} radius="xl" variant="filled" color="brand"
-              onClick={() => setRunning((r) => !r)}
-              aria-label={running ? 'Pauza' : 'Wznów'}
-            >
-              {running ? <IconPlayerPauseFilled size={20} /> : <IconPlayerPlayFilled size={20} />}
-            </ActionIcon>
-            <Box>
-              <Text size="10px" tt="uppercase" lts={1} c="dimmed">pozostało</Text>
-              <Text size="24px" fw={800} ff="monospace" c={lastStretch ? 'red.4' : undefined}>
-                {fmtTime(remaining)}
-              </Text>
-            </Box>
-          </Group>
-          <Group gap="xs">
-            <Switch size="xs" color="brand" label="Podpowiedzi" checked={hints} onChange={(e) => setHints(e.currentTarget.checked)} />
-            <Badge size="lg" variant="light" color="brand">{entries.length} rymów</Badge>
-            {config.bpm > 0 && <Badge size="lg" variant="light" color="gray">{config.bpm} BPM</Badge>}
-            <Button size="xs" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={onExit}>
+      <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
+        <Stack gap="xs">
+          <Group justify="space-between" wrap="nowrap" gap="sm">
+            <Group gap="sm" wrap="nowrap">
+              <ActionIcon
+                size={44} radius="xl" variant="filled" color="brand"
+                onClick={() => setRunning((r) => !r)}
+                aria-label={running ? 'Pauza' : 'Wznów'}
+              >
+                {running ? <IconPlayerPauseFilled size={20} /> : <IconPlayerPlayFilled size={20} />}
+              </ActionIcon>
+              <Box>
+                <Text size="10px" tt="uppercase" lts={1} c="dimmed">pozostało</Text>
+                <Text size="24px" fw={800} ff="monospace" c={lastStretch ? 'red.4' : undefined}>
+                  {fmtTime(remaining)}
+                </Text>
+              </Box>
+            </Group>
+            <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={onExit}>
               Zakończ
             </Button>
           </Group>
-        </Group>
+          <Group gap="xs" wrap="wrap" justify="space-between">
+            <Switch size="sm" color="brand" label="Podpowiedzi" checked={hints} onChange={(e) => setHints(e.currentTarget.checked)} />
+            <Group gap="xs" wrap="nowrap">
+              <Badge size="lg" variant="light" color="brand">{entries.length} rymów</Badge>
+              {config.bpm > 0 && <Badge size="lg" variant="light" color="gray">{config.bpm} BPM</Badge>}
+            </Group>
+          </Group>
+        </Stack>
         <Progress value={pct} color={lastStretch ? 'red' : 'brand'} size="sm" mt="sm" transitionDuration={120} />
       </Paper>
 
-      <Paper withBorder p="xl" radius="md" ta="center">
-        <Text size="xs" c="dimmed" tt="uppercase" lts={1}>końcówka</Text>
-        <Text style={{ fontSize: 96, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1 }} c="brand.3">
-          {ending ? `-${ending}` : '?'}
+      <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" ta="center">
+        <Text size="xs" c="dimmed" tt="uppercase" lts={1}>rymuj do</Text>
+        <Text
+          c="brand.3"
+          style={{
+            fontSize: 'clamp(44px, 14vw, 80px)',
+            fontWeight: 800,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.1,
+          }}
+        >
+          {seed || (ending ? `-${ending}` : '?')}
         </Text>
+        {ending && (
+          <Badge size="lg" variant="light" color="gray" mt={4}>końcówka -{ending}</Badge>
+        )}
 
-        <Group justify="center" mt="lg" gap="sm" wrap="nowrap">
-          <div className={shake ? 'rymy-shake' : ''} style={{ minWidth: 320 }}>
+        <Flex
+          justify="center"
+          align={{ base: 'stretch', xs: 'center' }}
+          direction={{ base: 'column', xs: 'row' }}
+          mt="lg"
+          gap="sm"
+        >
+          <div className={shake ? 'rymy-shake' : ''} style={{ flex: 1, maxWidth: 420, minWidth: 0 }}>
             <TextInput
               ref={inputRef}
               size="lg"
-              placeholder={`wpisz słowo z końcówką -${ending}`}
+              placeholder={seed ? `wpisz rym do „${seed}"` : `wpisz rym na -${ending}`}
               value={input}
               onChange={(e) => setInput(e.currentTarget.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
               disabled={!running}
+              autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="done"
             />
           </div>
           <Button size="lg" color="brand" onClick={submit} disabled={!input.trim() || !running}>
             Dodaj
           </Button>
-        </Group>
+        </Flex>
 
         {entries.length > 0 && (
           <Group justify="center" gap={6} wrap="wrap" mt="lg">
@@ -223,11 +261,11 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       </Paper>
 
       {hints && (
-        <Paper withBorder p="md" radius="md">
+        <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
           <Text size="sm" fw={600} tt="uppercase" lts={0.6} c="dimmed" mb="sm">
             Z banku ({bank.length})
           </Text>
-          <SimpleGrid cols={{ base: 3, sm: 5, md: 8 }} spacing="xs">
+          <SimpleGrid cols={{ base: 2, xs: 3, sm: 5, md: 8 }} spacing="xs">
             {bank.map((w) => (
               <Badge key={w.text} variant="light" color={entries.includes(w.text) ? 'brand' : 'gray'}>
                 {w.text}

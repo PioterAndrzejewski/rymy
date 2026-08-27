@@ -186,7 +186,7 @@ export function TrackStep() {
             <Badge variant="light" color="brand">{fmtBpm(track.bpm)} BPM</Badge>
             <Badge variant="light" color="gray">intro {introBars}</Badge>
             <Button
-              size="compact-xs" variant="subtle" color="gray"
+              size="sm" variant="subtle" color="gray"
               leftSection={<IconRestore size={14} />}
               onClick={() => void resetTrack()}
             >
@@ -200,7 +200,7 @@ export function TrackStep() {
         ) : (
           <Stack gap="lg">
             {/* transport + scrub */}
-            <Group gap="sm" wrap="nowrap">
+            <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
               <ActionIcon
                 size={48} radius="xl" variant="filled" color="brand"
                 onClick={() => engine.toggle()}
@@ -225,10 +225,17 @@ export function TrackStep() {
                   onChangeEnd={(v) => { engine.seekMs(v); setSeekMs(null); }}
                 />
               </Box>
-              <Text size="sm" ff="monospace" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+              <Text
+                size="xs" ff="monospace" c="dimmed" visibleFrom="xs"
+                style={{ whiteSpace: 'nowrap' }}
+              >
                 {fmtTime(seekMs ?? snap.timeMs)} / {fmtTime(durationMs)}
               </Text>
             </Group>
+
+            <Text size="xs" ff="monospace" c="dimmed" ta="center" hiddenFrom="xs" mt={-8}>
+              {fmtTime(seekMs ?? snap.timeMs)} / {fmtTime(durationMs)}
+            </Text>
 
             {/* live bar / beat feedback + metronome */}
             <Group justify="space-between" wrap="wrap" gap="md">
@@ -286,7 +293,7 @@ export function TrackStep() {
                       <Text size="sm" fw={600}>Tempo podkładu</Text>
                       <Text size="sm" c="brand.4" fw={700}>{fmtBpm(track.bpm)} BPM</Text>
                     </Group>
-                    <Group gap="sm" wrap="nowrap">
+                    <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
                       <Slider
                         flex={1} min={40} max={240} step={0.1} color="brand"
                         value={track.bpm} onChange={setBpm}
@@ -294,29 +301,31 @@ export function TrackStep() {
                         marks={[{ value: 60 }, { value: 90 }, { value: 120 }, { value: 160 }, { value: 200 }]}
                       />
                       <NumberInput
-                        w={104} min={40} max={240} step={0.1}
+                        w={92} min={40} max={240} step={0.1} hideControls
                         decimalScale={1} fixedDecimalScale={false} allowNegative={false}
                         value={track.bpm} onChange={(v) => setBpm(Number(v))}
                       />
                     </Group>
-                    <Group gap="xs">
-                      <Text size="xs" c="dimmed" w={54}>Popraw</Text>
-                      <Button.Group>
-                        <Button variant="default" size="xs" onClick={() => setBpm(track.bpm - 1)}>−1</Button>
-                        <Button variant="default" size="xs" onClick={() => setBpm(track.bpm - 0.1)}>−0.1</Button>
-                        <Button variant="default" size="xs" onClick={() => setBpm(track.bpm + 0.1)}>+0.1</Button>
-                        <Button variant="default" size="xs" onClick={() => setBpm(track.bpm + 1)}>+1</Button>
+                    <Group gap="xs" wrap="nowrap" align="center">
+                      <Text size="xs" c="dimmed" w={54} style={{ flexShrink: 0 }}>Popraw</Text>
+                      <Button.Group style={{ flex: 1, minWidth: 0 }}>
+                        <Button variant="default" size="sm" flex={1} px={4} onClick={() => setBpm(track.bpm - 1)}>−1</Button>
+                        <Button variant="default" size="sm" flex={1} px={4} onClick={() => setBpm(track.bpm - 0.1)}>−0.1</Button>
+                        <Button variant="default" size="sm" flex={1} px={4} onClick={() => setBpm(track.bpm + 0.1)}>+0.1</Button>
+                        <Button variant="default" size="sm" flex={1} px={4} onClick={() => setBpm(track.bpm + 1)}>+1</Button>
                       </Button.Group>
+                    </Group>
+                    <Group gap="xs">
                       <Text size="xs" c="dimmed">
                         Podkład rozjeżdża się dopiero po kilku taktach? To ułamki BPM.
                       </Text>
                     </Group>
-                    <Group gap="xs" mt={4}>
-                      <Button variant="default" size="xs" leftSection={<IconHandFinger size={14} />} onClick={tap}>
+                    <Group gap="xs" mt={4} wrap="wrap">
+                      <Button variant="default" size="sm" leftSection={<IconHandFinger size={14} />} onClick={tap}>
                         Stuknij tempo
                       </Button>
                       <Text size="xs" c="dimmed">{tapBpm != null ? `~${fmtBpm(tapBpm)} BPM` : 'stuknij min. 2 razy w rytm'}</Text>
-                      <Button size="xs" variant="light" color="brand" disabled={tapBpm == null} onClick={applyTap}>
+                      <Button size="sm" variant="light" color="brand" disabled={tapBpm == null} onClick={applyTap}>
                         Zastosuj
                       </Button>
                     </Group>
@@ -367,22 +376,24 @@ export function TrackStep() {
                           Odtwórz podkład i kliknij dokładnie na pierwszym uderzeniu — od niego liczymy takty.
                         </Text>
                       </Box>
-                      <Group gap="xs">
-                        <Badge variant="light" color="gray" size="lg">{track.downbeatOffsetMs} ms</Badge>
-                        <Button
-                          size="xs" color="brand" variant="light"
-                          leftSection={<IconTargetArrow size={14} />}
-                          onClick={markDownbeat}
-                        >
-                          Ustaw tutaj
-                        </Button>
-                        <Button.Group>
-                          <Button variant="default" size="xs" onClick={() => nudgeOffset(-100)}>−100</Button>
-                          <Button variant="default" size="xs" onClick={() => nudgeOffset(-10)}>−10</Button>
-                          <Button variant="default" size="xs" onClick={() => nudgeOffset(10)}>+10</Button>
-                          <Button variant="default" size="xs" onClick={() => nudgeOffset(100)}>+100</Button>
+                      <Stack gap="xs" style={{ flex: 1, minWidth: 200 }}>
+                        <Group gap="xs" wrap="wrap">
+                          <Badge variant="light" color="gray" size="lg">{track.downbeatOffsetMs} ms</Badge>
+                          <Button
+                            size="sm" color="brand" variant="light"
+                            leftSection={<IconTargetArrow size={14} />}
+                            onClick={markDownbeat}
+                          >
+                            Ustaw tutaj
+                          </Button>
+                        </Group>
+                        <Button.Group style={{ width: '100%' }}>
+                          <Button variant="default" size="sm" flex={1} px={4} onClick={() => nudgeOffset(-100)}>−100</Button>
+                          <Button variant="default" size="sm" flex={1} px={4} onClick={() => nudgeOffset(-10)}>−10</Button>
+                          <Button variant="default" size="sm" flex={1} px={4} onClick={() => nudgeOffset(10)}>+10</Button>
+                          <Button variant="default" size="sm" flex={1} px={4} onClick={() => nudgeOffset(100)}>+100</Button>
                         </Button.Group>
-                      </Group>
+                      </Stack>
                     </Group>
                   </Paper>
 
@@ -395,22 +406,22 @@ export function TrackStep() {
                           Takty intro grają bez słów, żebyś zdążył wejść w rytm.
                         </Text>
                       </Box>
-                      <Group gap="xs" wrap="wrap">
+                      <Group gap="xs" wrap="wrap" style={{ flex: 1, minWidth: 200 }}>
                         <Badge variant="light" color="brand" size="lg">{introBars} taktów</Badge>
                         <Button.Group>
-                          <Button variant="default" size="xs" leftSection={<IconMinus size={12} />} onClick={() => setIntroBars(introBars - 1)}>1</Button>
-                          <Button variant="default" size="xs" leftSection={<IconPlus size={12} />} onClick={() => setIntroBars(introBars + 1)}>1</Button>
-                          <Button variant="default" size="xs" leftSection={<IconPlus size={12} />} onClick={() => setIntroBars(introBars + 4)}>4</Button>
+                          <Button variant="default" size="sm" leftSection={<IconMinus size={12} />} onClick={() => setIntroBars(introBars - 1)}>1</Button>
+                          <Button variant="default" size="sm" leftSection={<IconPlus size={12} />} onClick={() => setIntroBars(introBars + 1)}>1</Button>
+                          <Button variant="default" size="sm" leftSection={<IconPlus size={12} />} onClick={() => setIntroBars(introBars + 4)}>4</Button>
                         </Button.Group>
                         <Button
-                          size="xs" variant="light" color="brand"
+                          size="sm" variant="light" color="brand"
                           leftSection={<IconTargetArrow size={14} />}
                           disabled={snap.bar < 0}
                           onClick={() => setIntroBars(Math.max(0, snap.bar))}
                         >
                           Ustaw na bieżącym takcie
                         </Button>
-                        <Button size="xs" variant="subtle" color="gray" onClick={() => setIntroBars(0)}>Bez intro</Button>
+                        <Button size="sm" variant="subtle" color="gray" onClick={() => setIntroBars(0)}>Bez intro</Button>
                       </Group>
                     </Group>
                   </Paper>
@@ -436,7 +447,7 @@ function IntroStrip({
 }: { introBars: number; currentBar: number; barPhase: number }) {
   const shown = Math.max(12, introBars + 6);
   return (
-    <Box style={{ overflowX: 'auto' }}>
+    <Box className="rymy-hscroll">
       <Group gap={4} wrap="nowrap" style={{ minWidth: 'min-content' }}>
         {Array.from({ length: shown }, (_, i) => {
           const isIntro = i < introBars;

@@ -58,9 +58,9 @@ export function StoryMode() {
 
   return (
     <Stack gap="lg" my="md">
-      <Group justify="space-between" align="end">
+      <Group justify="space-between" align="end" wrap="wrap" gap="xs">
         <div>
-          <Text size="26px" fw={800} lts="-0.02em">Historia</Text>
+          <Text style={{ fontSize: 'clamp(22px, 6.5vw, 26px)', fontWeight: 800, letterSpacing: '-0.02em' }}>Historia</Text>
           <Text c="dimmed" size="sm">
             Temat + słowa klucze, chwila na zapamiętanie, a potem opowiadasz historię do podkładu.
           </Text>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Paper, Stack, Group, Title, FileInput, TextInput, NumberInput, Button,
+  Paper, Stack, SimpleGrid, Title, FileInput, TextInput, NumberInput, Button,
 } from '@mantine/core';
 import { IconUpload, IconPlus } from '@tabler/icons-react';
 import { addUserTrack } from '@/storage/userTracks';
@@ -45,10 +45,10 @@ export function AddTrackForm() {
   }
 
   return (
-    <Paper withBorder p="md">
+    <Paper withBorder p={{ base: 'sm', sm: 'md' }}>
       <Stack gap="md">
         <Title order={5}>Dodaj podkład (do IndexedDB)</Title>
-        <Group grow align="end">
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm" verticalSpacing="sm">
           <FileInput
             label="Plik audio"
             accept="audio/*"
@@ -67,19 +67,21 @@ export function AddTrackForm() {
             label="BPM"
             description="Można ułamkowo, np. 69.7"
             value={bpm} min={30} max={300} step={0.1} decimalScale={1}
+            hideControls
             onChange={(v) => setBpm(Number(v))}
           />
-        </Group>
-        <Group grow align="end">
+        </SimpleGrid>
+        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm" verticalSpacing="sm">
           <NumberInput
             label="Offset downbeat (ms)"
+            hideControls
             value={offset}
             onChange={(v) => setOffset(Number(v))}
           />
           <NumberInput
             label="Takty intro"
             description="ile taktów na starcie bez słów"
-            value={introBars} min={0} max={64}
+            value={introBars} min={0} max={64} hideControls
             onChange={(v) => setIntroBars(Number(v))}
           />
           <TextInput
@@ -88,15 +90,17 @@ export function AddTrackForm() {
             onChange={(e) => setStyle(e.currentTarget.value)}
             placeholder="boom bap, trap, rock..."
           />
-          <Button
-            leftSection={<IconPlus size={16} />}
-            disabled={!file || busy}
-            loading={busy}
-            onClick={submit}
-          >
-            Dodaj
-          </Button>
-        </Group>
+        </SimpleGrid>
+        <Button
+          size="md"
+          fullWidth
+          leftSection={<IconPlus size={16} />}
+          disabled={!file || busy}
+          loading={busy}
+          onClick={submit}
+        >
+          Dodaj podkład
+        </Button>
       </Stack>
     </Paper>
   );

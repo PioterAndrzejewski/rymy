@@ -23,9 +23,10 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
   const snap = useTransport(track);
   const engineState = useEngineState();
 
-  const [topic, setTopic] = useState(() => (config.topicMode === 'auto' ? randomTopic() : config.topic));
+  const [initialTopic] = useState(() => (config.topicMode === 'auto' ? randomTopic() : config.topic));
+  const [topic, setTopic] = useState(initialTopic);
   const [keywords, setKeywords] = useState<string[]>(
-    () => (config.wordsMode === 'auto' ? drawKeywords(config.level, config.slots) : []),
+    () => (config.wordsMode === 'auto' ? drawKeywords(config.level, config.slots, initialTopic) : []),
   );
   const [phase, setPhase] = useState<Phase>(config.wordsMode === 'own' ? 'write' : 'memorize');
   const [runKey, setRunKey] = useState(0);
@@ -65,10 +66,11 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
 
   /** Fresh round honouring the configured modes. */
   function newRound() {
-    if (config.topicMode === 'auto') setTopic(randomTopic());
+    const nextTopic = config.topicMode === 'auto' ? randomTopic() : topic;
+    setTopic(nextTopic);
     setRunKey((k) => k + 1);
     if (config.wordsMode === 'auto') {
-      setKeywords(drawKeywords(config.level, config.slots));
+      setKeywords(drawKeywords(config.level, config.slots, nextTopic));
       setPhase('memorize');
     } else {
       setKeywords([]);
@@ -117,21 +119,21 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
 
   if (phase === 'done') {
     return (
-      <Paper withBorder p="xl" radius="md" className="rymy-fade-up" ta="center">
+      <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up" ta="center">
         <Stack gap="lg" align="center">
-          <Text size="32px" fw={800}>Historia opowiedziana 🎤</Text>
+          <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>Historia opowiedziana 🎤</Text>
           <Text c="dimmed">temat: <b>{topic}</b></Text>
           <Group gap={6} justify="center" wrap="wrap">
             {keywords.map((k, i) => (
               <Badge key={i} size="lg" variant="light" color="brand">{i + 1}. {k}</Badge>
             ))}
           </Group>
-          <Group gap="xl">
+          <Group gap="xl" justify="center" wrap="wrap">
             <Stat label="Takty" value={String(totalBars)} />
             <Stat label="Słowa" value={String(config.slots)} />
             <Stat label="Czas" value={barsToTime(totalBars, track?.bpm ?? 90, beatsPerBar)} />
           </Group>
-          <Group>
+          <Stack gap="xs" w="100%" maw={360}>
             <Button size="md" color="brand" leftSection={<IconRefresh size={16} />} onClick={again}>
               Jeszcze raz
             </Button>
@@ -139,7 +141,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
             <Button size="md" variant="subtle" color="gray" leftSection={<IconSettings size={16} />} onClick={onExit}>
               Zmień ustawienia
             </Button>
-          </Group>
+          </Stack>
         </Stack>
       </Paper>
     );
@@ -157,9 +159,9 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
         />
       )}
 
-      <Paper withBorder p="md" radius="md">
+      <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
         <Group justify="space-between" wrap="wrap" gap="sm">
-          <Group gap="sm">
+          <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
             <ActionIcon
               size={44} radius="xl" variant="filled" color="brand"
               onClick={() => engine.toggle()}
@@ -172,14 +174,14 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
                 <IconPlayerTrackPrevFilled size={18} />
               </ActionIcon>
             </Tooltip>
-            <Box>
+            <Box style={{ minWidth: 0 }}>
               <Text size="10px" tt="uppercase" lts={1} c="dimmed">temat</Text>
               <Text fw={700} lineClamp={1}>{topic || '—'}</Text>
             </Box>
           </Group>
-          <Group gap="xs">
+          <Group gap="xs" wrap="wrap">
             <Switch
-              size="xs" color="brand" label="Ukryj słowa"
+              size="sm" color="brand" label="Ukryj słowa"
               checked={hideWords}
               onChange={(e) => setHideWords(e.currentTarget.checked)}
             />
@@ -190,7 +192,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
               takt {Math.min(currentBar + 1, totalBars)} / {totalBars}
             </Badge>
             <Text size="xs" c="dimmed" ff="monospace">{fmtTime(snap.timeMs)}</Text>
-            <Button size="xs" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={abort}>
+            <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={abort}>
               Zakończ
             </Button>
           </Group>

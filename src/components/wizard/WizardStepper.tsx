@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Box, Group, Paper, Text, UnstyledButton } from '@mantine/core';
+import { Box, Group, Paper, Stack, Text, UnstyledButton } from '@mantine/core';
 import { IconCheck } from '@tabler/icons-react';
 
 export type StepDef = {
@@ -22,10 +22,117 @@ export function isReachable(steps: StepDef[], index: number, current: number): b
   return index <= current || steps.slice(0, index).every((s) => s.complete);
 }
 
+type DotProps = {
+  index: number;
+  done: boolean;
+  isCurrent: boolean;
+  size: number;
+};
+
+function StepDot({ index, done, isCurrent, size }: DotProps) {
+  return (
+    <Box
+      w={size}
+      h={size}
+      style={{
+        flexShrink: 0,
+        borderRadius: '50%',
+        display: 'grid',
+        placeItems: 'center',
+        fontSize: size >= 30 ? 13 : 12,
+        fontWeight: 700,
+        color: isCurrent
+          ? 'var(--mantine-color-dark-9)'
+          : done
+          ? '#fff'
+          : 'var(--mantine-color-dimmed)',
+        background: done
+          ? 'var(--mantine-color-accent-7)'
+          : isCurrent
+          ? 'var(--mantine-color-brand-5)'
+          : 'transparent',
+        border: `1px solid ${
+          isCurrent
+            ? 'var(--mantine-color-brand-4)'
+            : done
+            ? 'var(--mantine-color-accent-5)'
+            : 'var(--mantine-color-dark-4)'
+        }`,
+        boxShadow: isCurrent ? '0 0 0 4px rgba(243, 184, 29, 0.18)' : undefined,
+        transition: 'all 200ms ease',
+      }}
+    >
+      {done ? <IconCheck size={16} /> : index + 1}
+    </Box>
+  );
+}
+
 export function WizardStepper({ steps, current, onSelect }: Props) {
+  const active = steps[current];
+
   return (
     <Paper withBorder p="sm" radius="md">
-      <Group gap={0} wrap="nowrap" style={{ overflowX: 'auto' }}>
+      {/* Mobile: numbered dots only — labels never fit four steps across 390px.
+          The active step's label and hint go underneath, where they can wrap. */}
+      <Stack gap={8} hiddenFrom="sm">
+        <Group gap={0} wrap="nowrap" justify="center">
+          {steps.map((s, i) => {
+            const isCurrent = i === current;
+            const done = s.complete && !isCurrent;
+            const enabled = isReachable(steps, i, current) && !isCurrent;
+
+            return (
+              <Fragment key={s.id}>
+                {i > 0 && (
+                  <Box
+                    style={{
+                      flex: 1,
+                      minWidth: 12,
+                      maxWidth: 48,
+                      height: 2,
+                      margin: '0 6px',
+                      borderRadius: 2,
+                      background: steps[i - 1].complete
+                        ? 'var(--mantine-color-accent-7)'
+                        : 'var(--mantine-color-dark-4)',
+                      transition: 'background 200ms ease',
+                    }}
+                  />
+                )}
+                <UnstyledButton
+                  onClick={() => enabled && onSelect(i)}
+                  aria-label={`Krok ${i + 1}: ${s.label}`}
+                  aria-current={isCurrent ? 'step' : undefined}
+                  disabled={!enabled}
+                  style={{
+                    // 44px touch target around a 32px dot.
+                    display: 'grid',
+                    placeItems: 'center',
+                    width: 44,
+                    height: 44,
+                    flexShrink: 0,
+                    borderRadius: '50%',
+                    cursor: enabled ? 'pointer' : 'default',
+                    opacity: !isCurrent && !s.complete && !enabled ? 0.45 : 1,
+                    transition: 'opacity 200ms ease',
+                  }}
+                >
+                  <StepDot index={i} done={done} isCurrent={isCurrent} size={32} />
+                </UnstyledButton>
+              </Fragment>
+            );
+          })}
+        </Group>
+        {active && (
+          <Box ta="center">
+            <Text size="sm" fw={700}>{active.label}</Text>
+            <Text size="xs" c={active.hint ? 'brand.4' : 'dimmed'}>{active.hint ?? '—'}</Text>
+          </Box>
+        )}
+      </Stack>
+
+      {/* Tablet and up: the full labelled stepper. */}
+      <Group gap={0} wrap="nowrap" visibleFrom="sm">
         {steps.map((s, i) => {
           const isCurrent = i === current;
           const done = s.complete && !isCurrent;
@@ -61,39 +168,7 @@ export function WizardStepper({ steps, current, onSelect }: Props) {
                 }}
               >
                 <Group gap={10} wrap="nowrap">
-                  <Box
-                    w={30}
-                    h={30}
-                    style={{
-                      flexShrink: 0,
-                      borderRadius: '50%',
-                      display: 'grid',
-                      placeItems: 'center',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: isCurrent
-                        ? 'var(--mantine-color-dark-9)'
-                        : done
-                        ? '#fff'
-                        : 'var(--mantine-color-dimmed)',
-                      background: done
-                        ? 'var(--mantine-color-accent-7)'
-                        : isCurrent
-                        ? 'var(--mantine-color-brand-5)'
-                        : 'transparent',
-                      border: `1px solid ${
-                        isCurrent
-                          ? 'var(--mantine-color-brand-4)'
-                          : done
-                          ? 'var(--mantine-color-accent-5)'
-                          : 'var(--mantine-color-dark-4)'
-                      }`,
-                      boxShadow: isCurrent ? '0 0 0 4px rgba(243, 184, 29, 0.18)' : undefined,
-                      transition: 'all 200ms ease',
-                    }}
-                  >
-                    {done ? <IconCheck size={16} /> : i + 1}
-                  </Box>
+                  <StepDot index={i} done={done} isCurrent={isCurrent} size={30} />
                   <Box style={{ whiteSpace: 'nowrap' }}>
                     <Text size="sm" fw={isCurrent ? 700 : 500} c={isCurrent ? undefined : 'dimmed'}>
                       {s.label}

@@ -42,3 +42,34 @@ body { background: var(--mantine-color-body); color: var(--mantine-color-text); 
 
 .rymy-clickable { cursor: pointer; transition: border-color 140ms ease, background 140ms ease, transform 140ms ease; }
 .rymy-clickable:hover { border-color: var(--mantine-color-brand-6) !important; transform: translateY(-1px); }
+
+/* ---- mobile ------------------------------------------------------------- */
+
+/* iOS zooms the whole page when a focused input's text is under 16px. */
+@media (max-width: 48em) {
+  input, textarea, select { font-size: 16px !important; }
+}
+
+/* Long Polish words must never widen the page. */
+body { overflow-wrap: break-word; -webkit-text-size-adjust: 100%; }
+
+/* Keep the sticky header and bottom actions clear of the notch / home bar. */
+.rymy-safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Horizontal strips (timelines, bar rulers) scroll on their own, smoothly. */
+.rymy-hscroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+.rymy-hscroll::-webkit-scrollbar { height: 4px; }
+.rymy-hscroll::-webkit-scrollbar-thumb {
+  background: var(--mantine-color-dark-4);
+  border-radius: 2px;
+}
+
+/* Touch devices have no hover; the lift just causes sticky :hover states. */
+@media (hover: none) {
+  .rymy-clickable:hover { transform: none; }
+}
