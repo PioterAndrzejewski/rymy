@@ -1,0 +1,127 @@
+{
+  "level": 4,
+  "language": "pl",
+  "description": "Adds 100 words (cumulative 200). 20 new rhyme families of 5. Includes participles/adjectives for broader rhyming coverage.",
+  "extendsLevel": 3,
+  "words": [
+    { "text": "dziewczyna", "rhymeEnding": "yna",   "pos": "noun" },
+    { "text": "godzina",    "rhymeEnding": "ina",   "pos": "noun" },
+    { "text": "rodzina",    "rhymeEnding": "ina",   "pos": "noun" },
+    { "text": "malina",     "rhymeEnding": "ina",   "pos": "noun" },
+    { "text": "dolina",     "rhymeEnding": "ina",   "pos": "noun" },
+
+    { "text": "kapela",     "rhymeEnding": "ela",   "pos": "noun" },
+    { "text": "karuzela",   "rhymeEnding": "ela",   "pos": "noun" },
+    { "text": "akwarela",   "rhymeEnding": "ela",   "pos": "noun" },
+    { "text": "cela",       "rhymeEnding": "ela",   "pos": "noun" },
+    { "text": "gazela",     "rhymeEnding": "ela",   "pos": "noun" },
+
+    { "text": "taksówka",   "rhymeEnding": "ówka",  "pos": "noun" },
+    { "text": "żarówka",    "rhymeEnding": "ówka",  "pos": "noun" },
+    { "text": "pocztówka",  "rhymeEnding": "ówka",  "pos": "noun" },
+    { "text": "wskazówka",  "rhymeEnding": "ówka",  "pos": "noun" },
+    { "text": "główka",     "rhymeEnding": "ówka",  "pos": "noun" },
+
+    { "text": "sprawa",     "rhymeEnding": "awa",   "pos": "noun" },
+    { "text": "zabawa",     "rhymeEnding": "awa",   "pos": "noun" },
+    { "text": "kawa",       "rhymeEnding": "awa",   "pos": "noun" },
+    { "text": "trawa",      "rhymeEnding": "awa",   "pos": "noun" },
+    { "text": "Warszawa",   "rhymeEnding": "awa",   "pos": "noun" },
+
+    { "text": "głowa",      "rhymeEnding": "owa",   "pos": "noun" },
+    { "text": "mowa",       "rhymeEnding": "owa",   "pos": "noun" },
+    { "text": "rozmowa",    "rhymeEnding": "owa",   "pos": "noun" },
+    { "text": "budowa",     "rhymeEnding": "owa",   "pos": "noun" },
+    { "text": "umowa",      "rhymeEnding": "owa",   "pos": "noun" },
+
+    { "text": "droga",      "rhymeEnding": "oga",   "pos": "noun" },
+    { "text": "noga",       "rhymeEnding": "oga",   "pos": "noun" },
+    { "text": "trwoga",     "rhymeEnding": "oga",   "pos": "noun" },
+    { "text": "podłoga",    "rhymeEnding": "oga",   "pos": "noun" },
+    { "text": "załoga",     "rhymeEnding": "oga",   "pos": "noun" },
+
+    { "text": "duch",       "rhymeEnding": "uch",   "pos": "noun" },
+    { "text": "ruch",       "rhymeEnding": "uch",   "pos": "noun" },
+    { "text": "słuch",      "rhymeEnding": "uch",   "pos": "noun" },
+    { "text": "brzuch",     "rhymeEnding": "uch",   "pos": "noun" },
+    { "text": "puch",       "rhymeEnding": "uch",   "pos": "noun" },
+
+    { "text": "mądrość",    "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "ciekawość",  "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "wieczność",  "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "obecność",   "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "przyszłość", "rhymeEnding": "ość",   "pos": "noun" },
+
+    { "text": "działanie",  "rhymeEnding": "anie",  "pos": "noun" },
+    { "text": "granie",     "rhymeEnding": "anie",  "pos": "noun" },
+    { "text": "pisanie",    "rhymeEnding": "anie",  "pos": "noun" },
+    { "text": "czytanie",   "rhymeEnding": "anie",  "pos": "noun" },
+    { "text": "spanie",     "rhymeEnding": "anie",  "pos": "noun" },
+
+    { "text": "myślenie",   "rhymeEnding": "enie",  "pos": "noun" },
+    { "text": "uczenie",    "rhymeEnding": "enie",  "pos": "noun" },
+    { "text": "pieczenie",  "rhymeEnding": "enie",  "pos": "noun" },
+    { "text": "chodzenie",  "rhymeEnding": "enie",  "pos": "noun" },
+    { "text": "mówienie",   "rhymeEnding": "enie",  "pos": "noun" },
+
+    { "text": "brat",       "rhymeEnding": "at",    "pos": "noun" },
+    { "text": "świat",      "rhymeEnding": "at",    "pos": "noun" },
+    { "text": "kwiat",      "rhymeEnding": "at",    "pos": "noun" },
+    { "text": "warsztat",   "rhymeEnding": "at",    "pos": "noun" },
+    { "text": "aparat",     "rhymeEnding": "at",    "pos": "noun" },
+
+    { "text": "kot",        "rhymeEnding": "ot",    "pos": "noun" },
+    { "text": "lot",        "rhymeEnding": "ot",    "pos": "noun" },
+    { "text": "płot",       "rhymeEnding": "ot",    "pos": "noun" },
+    { "text": "grzmot",     "rhymeEnding": "ot",    "pos": "noun" },
+    { "text": "młot",       "rhymeEnding": "ot",    "pos": "noun" },
+
+    { "text": "teczka",     "rhymeEnding": "eczka", "pos": "noun" },
+    { "text": "beczka",     "rhymeEnding": "eczka", "pos": "noun" },
+    { "text": "książeczka", "rhymeEnding": "eczka", "pos": "noun" },
+    { "text": "bajeczka",   "rhymeEnding": "eczka", "pos": "noun" },
+    { "text": "bułeczka",   "rhymeEnding": "eczka", "pos": "noun" },
+
+    { "text": "kochany",    "rhymeEnding": "any",   "pos": "adj" },
+    { "text": "znany",      "rhymeEnding": "any",   "pos": "adj" },
+    { "text": "wybrany",    "rhymeEnding": "any",   "pos": "adj" },
+    { "text": "zapisany",   "rhymeEnding": "any",   "pos": "adj" },
+    { "text": "zapytany",   "rhymeEnding": "any",   "pos": "adj" },
+
+    { "text": "zmęczony",   "rhymeEnding": "ony",   "pos": "adj" },
+    { "text": "zielony",    "rhymeEnding": "ony",   "pos": "adj" },
+    { "text": "czerwony",   "rhymeEnding": "ony",   "pos": "adj" },
+    { "text": "uczony",     "rhymeEnding": "ony",   "pos": "adj" },
+    { "text": "spełniony",  "rhymeEnding": "ony",   "pos": "adj" },
+
+    { "text": "kolorowy",   "rhymeEnding": "owy",   "pos": "adj" },
+    { "text": "sportowy",   "rhymeEnding": "owy",   "pos": "adj" },
+    { "text": "nowy",       "rhymeEnding": "owy",   "pos": "adj" },
+    { "text": "domowy",     "rhymeEnding": "owy",   "pos": "adj" },
+    { "text": "klasowy",    "rhymeEnding": "owy",   "pos": "adj" },
+
+    { "text": "upał",       "rhymeEnding": "ał",    "pos": "noun" },
+    { "text": "wał",        "rhymeEnding": "ał",    "pos": "noun" },
+    { "text": "sygnał",     "rhymeEnding": "ał",    "pos": "noun" },
+    { "text": "kanał",      "rhymeEnding": "ał",    "pos": "noun" },
+    { "text": "materiał",   "rhymeEnding": "ał",    "pos": "noun" },
+
+    { "text": "starość",    "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "słabość",    "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "świeżość",   "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "gęstość",    "rhymeEnding": "ość",   "pos": "noun" },
+    { "text": "słodkość",   "rhymeEnding": "ość",   "pos": "noun" },
+
+    { "text": "krótki",     "rhymeEnding": "ki",    "pos": "adj" },
+    { "text": "słodki",     "rhymeEnding": "ki",    "pos": "adj" },
+    { "text": "brzydki",    "rhymeEnding": "ki",    "pos": "adj" },
+    { "text": "gładki",     "rhymeEnding": "ki",    "pos": "adj" },
+    { "text": "gorzki",     "rhymeEnding": "ki",    "pos": "adj" },
+
+    { "text": "mglisty",    "rhymeEnding": "isty",  "pos": "adj" },
+    { "text": "wodnisty",   "rhymeEnding": "isty",  "pos": "adj" },
+    { "text": "ognisty",    "rhymeEnding": "isty",  "pos": "adj" },
+    { "text": "złocisty",   "rhymeEnding": "isty",  "pos": "adj" },
+    { "text": "srebrzysty", "rhymeEnding": "ysty",  "pos": "adj" }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "level": 1,
+  "language": "pl",
+  "description": "Seed 30 common Polish nouns, 6 rhyme families of 5.",
+  "words": [
+    { "text": "woda",       "rhymeEnding": "oda",  "pos": "noun" },
+    { "text": "moda",       "rhymeEnding": "oda",  "pos": "noun" },
+    { "text": "broda",      "rhymeEnding": "oda",  "pos": "noun" },
+    { "text": "szkoda",     "rhymeEnding": "oda",  "pos": "noun" },
+    { "text": "pogoda",     "rhymeEnding": "oda",  "pos": "noun" },
+
+    { "text": "miłość",     "rhymeEnding": "ość",  "pos": "noun" },
+    { "text": "radość",     "rhymeEnding": "ość",  "pos": "noun" },
+    { "text": "złość",      "rhymeEnding": "ość",  "pos": "noun" },
+    { "text": "młodość",    "rhymeEnding": "ość",  "pos": "noun" },
+    { "text": "wolność",    "rhymeEnding": "ość",  "pos": "noun" },
+
+    { "text": "mieszkanie", "rhymeEnding": "anie", "pos": "noun" },
+    { "text": "spotkanie",  "rhymeEnding": "anie", "pos": "noun" },
+    { "text": "kochanie",   "rhymeEnding": "anie", "pos": "noun" },
+    { "text": "śpiewanie",  "rhymeEnding": "anie", "pos": "noun" },
+    { "text": "śniadanie",  "rhymeEnding": "anie", "pos": "noun" },
+
+    { "text": "domek",      "rhymeEnding": "ek",   "pos": "noun" },
+    { "text": "kotek",      "rhymeEnding": "ek",   "pos": "noun" },
+    { "text": "piesek",     "rhymeEnding": "ek",   "pos": "noun" },
+    { "text": "kwiatek",    "rhymeEnding": "ek",   "pos": "noun" },
+    { "text": "stołek",     "rhymeEnding": "ek",   "pos": "noun" },
+
+    { "text": "lekarz",     "rhymeEnding": "arz",  "pos": "noun" },
+    { "text": "piekarz",    "rhymeEnding": "arz",  "pos": "noun" },
+    { "text": "malarz",     "rhymeEnding": "arz",  "pos": "noun" },
+    { "text": "pisarz",     "rhymeEnding": "arz",  "pos": "noun" },
+    { "text": "murarz",     "rhymeEnding": "arz",  "pos": "noun" },
+
+    { "text": "robota",     "rhymeEnding": "ota",  "pos": "noun" },
+    { "text": "sobota",     "rhymeEnding": "ota",  "pos": "noun" },
+    { "text": "ochota",     "rhymeEnding": "ota",  "pos": "noun" },
+    { "text": "tęsknota",   "rhymeEnding": "ota",  "pos": "noun" },
+    { "text": "prostota",   "rhymeEnding": "ota",  "pos": "noun" }
+  ]
+}

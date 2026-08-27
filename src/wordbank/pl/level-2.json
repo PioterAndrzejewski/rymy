@@ -1,0 +1,43 @@
+{
+  "level": 2,
+  "language": "pl",
+  "description": "Adds 30 words (cumulative 60). 6 new rhyme families of 5.",
+  "extendsLevel": 1,
+  "words": [
+    { "text": "góra",     "rhymeEnding": "ura",  "pos": "noun" },
+    { "text": "dziura",   "rhymeEnding": "ura",  "pos": "noun" },
+    { "text": "natura",   "rhymeEnding": "ura",  "pos": "noun" },
+    { "text": "kultura",  "rhymeEnding": "ura",  "pos": "noun" },
+    { "text": "figura",   "rhymeEnding": "ura",  "pos": "noun" },
+
+    { "text": "kraj",     "rhymeEnding": "aj",   "pos": "noun" },
+    { "text": "gaj",      "rhymeEnding": "aj",   "pos": "noun" },
+    { "text": "zwyczaj",  "rhymeEnding": "aj",   "pos": "noun" },
+    { "text": "tramwaj",  "rhymeEnding": "aj",   "pos": "noun" },
+    { "text": "urodzaj",  "rhymeEnding": "aj",   "pos": "noun" },
+
+    { "text": "noc",      "rhymeEnding": "oc",   "pos": "noun" },
+    { "text": "moc",      "rhymeEnding": "oc",   "pos": "noun" },
+    { "text": "pomoc",    "rhymeEnding": "oc",   "pos": "noun" },
+    { "text": "przemoc",  "rhymeEnding": "oc",   "pos": "noun" },
+    { "text": "niemoc",   "rhymeEnding": "oc",   "pos": "noun" },
+
+    { "text": "chemik",     "rhymeEnding": "ik",  "pos": "noun" },
+    { "text": "technik",    "rhymeEnding": "ik",  "pos": "noun" },
+    { "text": "ogrodnik",   "rhymeEnding": "ik",  "pos": "noun" },
+    { "text": "robotnik",   "rhymeEnding": "ik",  "pos": "noun" },
+    { "text": "pracownik",  "rhymeEnding": "ik",  "pos": "noun" },
+
+    { "text": "chłopiec",   "rhymeEnding": "ec",  "pos": "noun" },
+    { "text": "ojciec",     "rhymeEnding": "ec",  "pos": "noun" },
+    { "text": "koniec",     "rhymeEnding": "ec",  "pos": "noun" },
+    { "text": "taniec",     "rhymeEnding": "ec",  "pos": "noun" },
+    { "text": "kupiec",     "rhymeEnding": "ec",  "pos": "noun" },
+
+    { "text": "wróg",       "rhymeEnding": "óg",  "pos": "noun" },
+    { "text": "próg",       "rhymeEnding": "óg",  "pos": "noun" },
+    { "text": "róg",        "rhymeEnding": "óg",  "pos": "noun" },
+    { "text": "pieróg",     "rhymeEnding": "óg",  "pos": "noun" },
+    { "text": "stóg",       "rhymeEnding": "óg",  "pos": "noun" }
+  ]
+}

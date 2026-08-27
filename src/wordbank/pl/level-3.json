@@ -1,0 +1,55 @@
+{
+  "level": 3,
+  "language": "pl",
+  "description": "Adds 40 words (cumulative 100). 8 new rhyme families of 5.",
+  "extendsLevel": 2,
+  "words": [
+    { "text": "boisko",      "rhymeEnding": "isko", "pos": "noun" },
+    { "text": "ognisko",     "rhymeEnding": "isko", "pos": "noun" },
+    { "text": "mrowisko",    "rhymeEnding": "isko", "pos": "noun" },
+    { "text": "siedlisko",   "rhymeEnding": "isko", "pos": "noun" },
+    { "text": "stanowisko",  "rhymeEnding": "isko", "pos": "noun" },
+
+    { "text": "gracz",       "rhymeEnding": "acz",  "pos": "noun" },
+    { "text": "tłumacz",     "rhymeEnding": "acz",  "pos": "noun" },
+    { "text": "palacz",      "rhymeEnding": "acz",  "pos": "noun" },
+    { "text": "słuchacz",    "rhymeEnding": "acz",  "pos": "noun" },
+    { "text": "biegacz",     "rhymeEnding": "acz",  "pos": "noun" },
+
+    { "text": "stół",        "rhymeEnding": "ół",   "pos": "noun" },
+    { "text": "ból",         "rhymeEnding": "ól",   "pos": "noun" },
+    { "text": "wół",         "rhymeEnding": "ół",   "pos": "noun" },
+    { "text": "dół",         "rhymeEnding": "ół",   "pos": "noun" },
+    { "text": "kościół",     "rhymeEnding": "ół",   "pos": "noun" },
+
+    { "text": "dzień",       "rhymeEnding": "eń",   "pos": "noun" },
+    { "text": "cień",        "rhymeEnding": "eń",   "pos": "noun" },
+    { "text": "jeleń",       "rhymeEnding": "eń",   "pos": "noun" },
+    { "text": "kamień",      "rhymeEnding": "eń",   "pos": "noun" },
+    { "text": "promień",     "rhymeEnding": "eń",   "pos": "noun" },
+
+    { "text": "kolor",       "rhymeEnding": "or",   "pos": "noun" },
+    { "text": "doktor",      "rhymeEnding": "or",   "pos": "noun" },
+    { "text": "aktor",       "rhymeEnding": "or",   "pos": "noun" },
+    { "text": "traktor",     "rhymeEnding": "or",   "pos": "noun" },
+    { "text": "motor",       "rhymeEnding": "or",   "pos": "noun" },
+
+    { "text": "student",     "rhymeEnding": "ent",  "pos": "noun" },
+    { "text": "klient",      "rhymeEnding": "ent",  "pos": "noun" },
+    { "text": "prezent",     "rhymeEnding": "ent",  "pos": "noun" },
+    { "text": "moment",      "rhymeEnding": "ent",  "pos": "noun" },
+    { "text": "dokument",    "rhymeEnding": "ent",  "pos": "noun" },
+
+    { "text": "komputer",    "rhymeEnding": "er",   "pos": "noun" },
+    { "text": "kelner",      "rhymeEnding": "er",   "pos": "noun" },
+    { "text": "rower",       "rhymeEnding": "er",   "pos": "noun" },
+    { "text": "oficer",      "rhymeEnding": "er",   "pos": "noun" },
+    { "text": "minister",    "rhymeEnding": "er",   "pos": "noun" },
+
+    { "text": "fizyka",      "rhymeEnding": "yka",  "pos": "noun" },
+    { "text": "muzyka",      "rhymeEnding": "yka",  "pos": "noun" },
+    { "text": "gramatyka",   "rhymeEnding": "yka",  "pos": "noun" },
+    { "text": "matematyka",  "rhymeEnding": "yka",  "pos": "noun" },
+    { "text": "technika",    "rhymeEnding": "ika",  "pos": "noun" }
+  ]
+}
