@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Badge, Button, Flex, Group, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
-import { IconDice5, IconEyeOff, IconPencil, IconRefresh } from '@tabler/icons-react';
+import { Badge, Button, Flex, Group, Textarea, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
+import { IconDice5, IconEyeOff, IconListNumbers, IconPencil, IconRefresh } from '@tabler/icons-react';
 import { Section } from '@/components/wizard/StepShell';
 import { ChoiceCard } from '@/components/wizard/ChoiceCard';
 import { randomTopics } from '@/wordbank/pl/story-topics';
-import { TOPIC_COUNT, randomTopic, type StoryConfig } from './config';
+import { TOPIC_COUNT, parseDirectWords, randomTopic, type StoryConfig } from './config';
 
 type Props = {
   config: StoryConfig;
@@ -13,11 +13,12 @@ type Props = {
 
 export function TopicStep({ config, patch }: Props) {
   const [suggestions, setSuggestions] = useState(() => randomTopics(6));
+  const directCount = parseDirectWords(config.directWords).length;
 
   return (
     <Stack gap="md">
       <Section title="Skąd temat historii">
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm" mb="sm">
           <ChoiceCard
             icon={<IconPencil size={20} />}
             title="Wybieram temat"
@@ -79,6 +80,32 @@ export function TopicStep({ config, patch }: Props) {
             </Text>
           </ChoiceCard>
         </SimpleGrid>
+
+        <ChoiceCard
+          icon={<IconListNumbers size={20} />}
+          title="Po prostu wpiszę słowa klucze"
+          description="Bez tematu i bez reszty ustawień — wpisujesz listę i od razu startujesz."
+          selected={config.topicMode === 'none'}
+          onSelect={() => patch({ topicMode: 'none' })}
+        >
+          <Textarea
+            label="Słowa klucze — jedno na linię"
+            description="Kolejność ma znaczenie: w tej kolejności będą padać w ćwiczeniu."
+            autosize
+            minRows={4}
+            maxRows={12}
+            value={config.directWords}
+            onChange={(e) => patch({ directWords: e.currentTarget.value })}
+            placeholder={'rower\ndeszcz\nprzystanek'}
+          />
+          <Group justify="space-between" mt="xs">
+            <Text size="xs" c="dimmed">
+              {directCount === 0
+                ? 'Wpisz przynajmniej dwa słowa.'
+                : `${directCount} ${directCount === 1 ? 'słowo' : directCount < 5 ? 'słowa' : 'słów'} — tyle będzie w ćwiczeniu.`}
+            </Text>
+          </Group>
+        </ChoiceCard>
       </Section>
     </Stack>
   );

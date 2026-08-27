@@ -9,7 +9,7 @@ import { TrackStep } from '@/components/setup/TrackStep';
 import { TopicStep } from './story/TopicStep';
 import { StoryWordsStep } from './story/StoryWordsStep';
 import { StoryRun } from './story/StoryRun';
-import { defaultStoryConfig, type StoryConfig } from './story/config';
+import { defaultStoryConfig, parseDirectWords, type StoryConfig } from './story/config';
 import { barsToTime, fmtBpm } from '@/lib/format';
 
 export function StoryMode() {
@@ -22,9 +22,15 @@ export function StoryMode() {
 
   const patch = (p: Partial<StoryConfig>) => setConfig((c) => ({ ...c, ...p }));
 
-  const topicReady = config.topicMode === 'auto' || config.topic.trim().length > 0;
+  // "Po prostu wpiszę słowa klucze" skips the keyword step entirely.
+  const direct = config.topicMode === 'none';
+  const directWords = parseDirectWords(config.directWords);
+  const topicReady = direct
+    ? directWords.length >= 2
+    : config.topicMode === 'auto' || config.topic.trim().length > 0;
+  const slots = direct ? directWords.length : config.slots;
   const introBars = track?.introBars ?? 0;
-  const totalBars = introBars + config.slots * config.barsPerKeyword;
+  const totalBars = introBars + slots * config.barsPerKeyword;
   const beatsPerBar = track?.timeSignature[0] ?? 4;
 
   const steps: StepDef[] = [
@@ -36,16 +42,18 @@ export function StoryMode() {
     },
     {
       id: 'topic',
-      label: 'Temat',
-      hint: config.topicMode === 'auto' ? 'losowy przy starcie' : config.topic || undefined,
+      label: direct ? 'Słowa' : 'Temat',
+      hint: direct
+        ? `${directWords.length} własnych słów`
+        : config.topicMode === 'auto' ? 'losowy przy starcie' : config.topic || undefined,
       complete: topicReady,
     },
-    {
+    ...(direct ? [] : [{
       id: 'words',
       label: 'Słowa klucze',
       hint: `${config.slots} × ${config.wordsMode === 'own' ? 'własne' : `bank L${config.level}`}`,
       complete: true,
-    },
+    }]),
     {
       id: 'start',
       label: 'Start',
@@ -53,6 +61,9 @@ export function StoryMode() {
       complete: !!track && topicReady,
     },
   ];
+
+  const stepIndex = Math.min(step, steps.length - 1);
+  const stepId = steps[stepIndex].id;
 
   if (running) return <StoryRun config={config} onExit={() => setRunning(false)} />;
 
@@ -65,12 +76,12 @@ export function StoryMode() {
             Temat + słowa klucze, chwila na zapamiętanie, a potem opowiadasz historię do podkładu.
           </Text>
         </div>
-        <Badge variant="light" color="brand" size="lg">krok {step + 1} / {steps.length}</Badge>
+        <Badge variant="light" color="brand" size="lg">krok {stepIndex + 1} / {steps.length}</Badge>
       </Group>
 
-      <WizardStepper steps={steps} current={step} onSelect={setStep} />
+      <WizardStepper steps={steps} current={stepIndex} onSelect={setStep} />
 
-      {step === 0 && (
+      {stepId === 'track' && (
         <StepShell title="Wybierz podkład">
           <TrackStep />
           <WizardFooter
@@ -85,7 +96,7 @@ export function StoryMode() {
         </StepShell>
       )}
 
-      {step === 1 && (
+      {stepId === 'topic' && (
         <StepShell
           title="Temat historii"
           description="Chcesz wiedzieć, o czym opowiadasz — czy wolisz dowiedzieć się dopiero przy starcie?"
@@ -93,16 +104,20 @@ export function StoryMode() {
           <TopicStep config={config} patch={patch} />
           <WizardFooter
             onBack={() => setStep(0)}
-            onNext={() => setStep(2)}
-            nextLabel="Gotowe"
-            finish
-            nextDisabled={!topicReady}
-            blockedReason="Wpisz temat albo wybierz losowanie."
+            onNext={() => (direct ? setRunning(true) : setStep(2))}
+            nextLabel={direct ? 'Rozpocznij ćwiczenie' : 'Gotowe'}
+            finish={!direct}
+            nextDisabled={!topicReady || (direct && !track)}
+            blockedReason={
+              direct
+                ? 'Wpisz przynajmniej dwa słowa (i wybierz podkład).'
+                : 'Wpisz temat albo wybierz losowanie.'
+            }
           />
         </StepShell>
       )}
 
-      {step === 2 && (
+      {stepId === 'words' && (
         <StepShell
           title="Słowa klucze"
           description="Słowa, które muszą paść w kolejności. Możesz wpisać je sam przed startem albo je wylosować."
@@ -117,15 +132,15 @@ export function StoryMode() {
         </StepShell>
       )}
 
-      {step === 3 && (
+      {stepId === 'start' && (
         <StepShell title="Wszystko gotowe" description="Sprawdź podsumowanie i zaczynamy.">
           <ReadyPanel
             headline="Gotowy?"
             items={[
               { label: 'Podkład', value: track?.name ?? '—' },
               { label: 'Tempo', value: `${fmtBpm(track?.bpm)} BPM` },
-              { label: 'Temat', value: config.topicMode === 'auto' ? 'losowy 🎲' : config.topic },
-              { label: 'Słowa', value: config.wordsMode === 'own' ? `${config.slots} własnych` : `${config.slots} z L${config.level}` },
+              { label: 'Temat', value: direct ? 'bez tematu' : config.topicMode === 'auto' ? 'losowy 🎲' : config.topic },
+              { label: 'Słowa', value: direct ? `${slots} własnych` : config.wordsMode === 'own' ? `${config.slots} własnych` : `${config.slots} z L${config.level}` },
               { label: 'Na słowo', value: `${config.barsPerKeyword} takty` },
               { label: 'Zapamiętanie', value: `${config.memorizeSec} s` },
               { label: 'Długość', value: `${totalBars} taktów` },
@@ -138,7 +153,7 @@ export function StoryMode() {
             }
           />
           <WizardFooter
-            onBack={() => setStep(2)}
+            onBack={() => setStep(steps.length - 2)}
             onNext={() => setRunning(true)}
             nextLabel="Rozpocznij ćwiczenie"
             nextDisabled={!track || !topicReady}

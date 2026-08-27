@@ -9,10 +9,12 @@ import {
 import { engine } from '@/audio/engineSingleton';
 import { playChime } from '@/audio/click';
 import { useEngineState, useTransport } from '@/audio/useTransport';
+import { useClickDriver } from '@/audio/useClickDriver';
+import { isClickOnly } from '@/audio/clickTrack';
 import { useSession } from '@/state/session';
 import { CountIn } from '@/components/CountIn';
 import { barsToTime, fmtTime } from '@/lib/format';
-import { drawKeywords, randomTopic, type StoryConfig } from './config';
+import { drawKeywords, parseDirectWords, randomTopic, type StoryConfig } from './config';
 import { KeywordWriter, MemorizePanel } from './StoryPhases';
 import { buildStoryPlan, StoryTimeline } from './StoryTimeline';
 
@@ -22,19 +24,29 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
   const { track } = useSession();
   const snap = useTransport(track);
   const engineState = useEngineState();
+  // In metronome-only mode the click IS the backing track, so it has to keep
+  // running through the exercise (normally the click stops after setup).
+  useClickDriver(isClickOnly(track) ? track : null, { force: true });
 
-  const [initialTopic] = useState(() => (config.topicMode === 'auto' ? randomTopic() : config.topic));
-  const [topic, setTopic] = useState(initialTopic);
-  const [keywords, setKeywords] = useState<string[]>(
-    () => (config.wordsMode === 'auto' ? drawKeywords(config.level, config.slots, initialTopic) : []),
+  const direct = config.topicMode === 'none';
+  const [initialTopic] = useState(() =>
+    direct ? '' : config.topicMode === 'auto' ? randomTopic() : config.topic,
   );
-  const [phase, setPhase] = useState<Phase>(config.wordsMode === 'own' ? 'write' : 'memorize');
+  const [topic, setTopic] = useState(initialTopic);
+  const [keywords, setKeywords] = useState<string[]>(() => {
+    if (direct) return parseDirectWords(config.directWords);
+    return config.wordsMode === 'auto' ? drawKeywords(config.level, config.slots, initialTopic) : [];
+  });
+  const [phase, setPhase] = useState<Phase>(
+    !direct && config.wordsMode === 'own' ? 'write' : 'memorize',
+  );
   const [runKey, setRunKey] = useState(0);
   const [hideWords, setHideWords] = useState(false);
 
+  const slots = keywords.length || config.slots;
   const introBars = track?.introBars ?? 0;
   const beatsPerBar = track?.timeSignature[0] ?? 4;
-  const totalBars = introBars + config.slots * config.barsPerKeyword;
+  const totalBars = introBars + slots * config.barsPerKeyword;
 
   const plan = useMemo(
     () => buildStoryPlan(keywords, introBars, config.barsPerKeyword),
@@ -66,6 +78,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
 
   /** Fresh round honouring the configured modes. */
   function newRound() {
+    if (direct) { again(); return; }
     const nextTopic = config.topicMode === 'auto' ? randomTopic() : topic;
     setTopic(nextTopic);
     setRunKey((k) => k + 1);
@@ -85,7 +98,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
 
   const currentBar = Math.max(0, snap.bar);
   const currentIdx = phase === 'play' && currentBar >= introBars
-    ? Math.max(0, Math.min(config.slots - 1, Math.floor((currentBar - introBars) / config.barsPerKeyword)))
+    ? Math.max(0, Math.min(slots - 1, Math.floor((currentBar - introBars) / config.barsPerKeyword)))
     : -1;
   // The keyword lands on the last bar of its group, so this is how many bars
   // you still have to fill before it has to fall.
@@ -127,7 +140,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
       <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up" ta="center">
         <Stack gap="lg" align="center">
           <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>Historia opowiedziana 🎤</Text>
-          <Text c="dimmed">temat: <b>{topic}</b></Text>
+          {topic && <Text c="dimmed">temat: <b>{topic}</b></Text>}
           <Group gap={6} justify="center" wrap="wrap">
             {keywords.map((k, i) => (
               <Badge key={i} size="lg" variant="light" color="brand">{i + 1}. {k}</Badge>
@@ -135,7 +148,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
           </Group>
           <Group gap="xl" justify="center" wrap="wrap">
             <Stat label="Takty" value={String(totalBars)} />
-            <Stat label="Słowa" value={String(config.slots)} />
+            <Stat label="Słowa" value={String(slots)} />
             <Stat label="Czas" value={barsToTime(totalBars, track?.bpm ?? 90, beatsPerBar)} />
           </Group>
           <Stack gap="xs" w="100%" maw={360}>
@@ -180,8 +193,10 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
               </ActionIcon>
             </Tooltip>
             <Box style={{ minWidth: 0 }}>
-              <Text size="10px" tt="uppercase" lts={1} c="dimmed">temat</Text>
-              <Text fw={700} lineClamp={1}>{topic || '—'}</Text>
+              <Text size="10px" tt="uppercase" lts={1} c="dimmed">
+                {topic ? 'temat' : 'słowa klucze'}
+              </Text>
+              <Text fw={700} lineClamp={1}>{topic || `${slots} słów po kolei`}</Text>
             </Box>
           </Group>
           <Group gap="xs" wrap="wrap">
@@ -191,7 +206,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
               onChange={(e) => setHideWords(e.currentTarget.checked)}
             />
             <Badge variant="light" color="gray" size="lg">
-              słowo {currentIdx >= 0 ? currentIdx + 1 : '—'} / {config.slots}
+              słowo {currentIdx >= 0 ? currentIdx + 1 : '—'} / {slots}
             </Badge>
             <Badge variant="light" color={currentBar < introBars ? 'accent' : 'brand'} size="lg">
               takt {Math.min(currentBar + 1, totalBars)} / {totalBars}

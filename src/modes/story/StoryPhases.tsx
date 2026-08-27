@@ -162,13 +162,17 @@ export function MemorizePanel({ topic, keywords, seconds, onDone, onAbort }: Mem
     <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up">
       <Group justify="space-between" align="center" wrap="wrap" gap="md">
         <Box style={{ flex: 1, minWidth: 0 }}>
-          <Text size="xs" tt="uppercase" lts={1.5} c="dimmed">zapamiętaj — temat</Text>
-          <Text
-            c="brand.2"
-            style={{ fontSize: 'clamp(24px, 8vw, 34px)', fontWeight: 800, letterSpacing: '-0.02em' }}
-          >
-            {topic || '—'}
+          <Text size="xs" tt="uppercase" lts={1.5} c="dimmed">
+            {topic ? 'zapamiętaj — temat' : 'zapamiętaj kolejność słów'}
           </Text>
+          {topic && (
+            <Text
+              c="brand.2"
+              style={{ fontSize: 'clamp(24px, 8vw, 34px)', fontWeight: 800, letterSpacing: '-0.02em' }}
+            >
+              {topic}
+            </Text>
+          )}
         </Box>
         <RingProgress
           size={120} thickness={10}

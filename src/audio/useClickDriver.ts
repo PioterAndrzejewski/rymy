@@ -11,9 +11,10 @@ const SETTINGS_REFRESH_MS = 250;
 // Accent on the downbeat (beat 0). Settings are re-read a few times a second so
 // toggling the metronome in the UI takes effect without prop plumbing — but not
 // on every frame, which would mean a localStorage read + JSON.parse per frame.
-export function useClickDriver(track: Track | null) {
+export function useClickDriver(track: Track | null, opts: { force?: boolean } = {}) {
   const lastBar = useRef(-2);
   const lastBeat = useRef(-2);
+  const force = opts.force ?? false;
 
   useEffect(() => {
     if (!track) return;
@@ -27,7 +28,7 @@ export function useClickDriver(track: Track | null) {
         settings = loadSettings();
         lastSettingsRead = now;
       }
-      if (engine.getState() === 'playing' && settings.clickEnabled) {
+      if (engine.getState() === 'playing' && (force || settings.clickEnabled)) {
         const snap = computeTransport(engine.currentTimeMs, track);
         if (snap.bar >= 0 && (snap.bar !== lastBar.current || snap.beat !== lastBeat.current)) {
           if (lastBar.current !== -2) {
@@ -44,5 +45,5 @@ export function useClickDriver(track: Track | null) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [track]);
+  }, [track, force]);
 }

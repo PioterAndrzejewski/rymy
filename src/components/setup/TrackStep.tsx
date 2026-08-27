@@ -6,7 +6,7 @@ import {
 import {
   IconAdjustmentsHorizontal, IconChevronDown, IconHandFinger,
   IconMinus, IconMusicOff, IconPlayerPlayFilled, IconPlayerPauseFilled,
-  IconPlayerTrackPrevFilled, IconPlus, IconRestore, IconTargetArrow,
+  IconMetronome, IconPlayerTrackPrevFilled, IconPlus, IconRestore, IconTargetArrow,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,7 @@ import { useClickDriver } from '@/audio/useClickDriver';
 import { engine } from '@/audio/engineSingleton';
 import { TapTempo } from '@/audio/tapTempo';
 import { resolveTrackSrc } from '@/storage/tracksLibrary';
+import { isClickOnly, makeClickTrack } from '@/audio/clickTrack';
 import { clearOverride, patchOverride, scopeFor } from '@/storage/trackOverrides';
 import { loadSettings, saveSettings, type Settings } from '@/storage/settings';
 import { Section } from '@/components/wizard/StepShell';
@@ -38,7 +39,7 @@ export function TrackStep() {
   const snap = useTransport(track);
   // The click lives here and nowhere else: it is a tool for verifying the tempo,
   // not something you want ticking over the exercise itself.
-  useClickDriver(track);
+  useClickDriver(track, { force: isClickOnly(track) });
 
   const [settings, setSettings] = useState<Settings>(() => loadSettings());
   const [rate, setRate] = useState(1);
@@ -72,6 +73,12 @@ export function TrackStep() {
       });
     }
   }, [track?.id, setTrack]);
+
+  const selectClickOnly = useCallback(() => {
+    engine.pause();
+    engine.loadClickOnly();
+    setTrack(makeClickTrack());
+  }, [setTrack]);
 
   const togglePreview = useCallback(async (t: Track) => {
     if (track?.id !== t.id) {
@@ -117,6 +124,11 @@ export function TrackStep() {
     if (!track) return;
     const id = track.id;
     clearOverride(id, scopeFor(track.source));
+    if (isClickOnly(track)) {
+      setTrack(makeClickTrack());
+      notifications.show({ color: 'brand', message: 'Przywrócono domyślne ustawienia' });
+      return;
+    }
     await refresh();
     const fresh = useLibrary.getState().tracks.find((t) => t.id === id);
     if (fresh) setTrack(fresh);
@@ -140,6 +152,7 @@ export function TrackStep() {
   const isPlaying = engineState === 'playing';
   const durationMs = engine.durationMs;
   const beatsPerBar = track?.timeSignature[0] ?? 4;
+  const clickOnly = isClickOnly(track);
   const introBars = track?.introBars ?? 0;
 
   return (
@@ -154,6 +167,33 @@ export function TrackStep() {
           </Group>
         }
       >
+        <Paper
+          withBorder p="md" radius="md" mb="sm"
+          className="rymy-clickable"
+          onClick={selectClickOnly}
+          style={{
+            borderColor: clickOnly ? 'var(--mantine-color-brand-6)' : undefined,
+            background: clickOnly ? 'rgba(243, 184, 29, 0.07)' : undefined,
+          }}
+        >
+          <Group wrap="nowrap" align="center" gap="sm">
+            <Box
+              w={42} h={42}
+              style={{
+                flexShrink: 0, borderRadius: '50%', display: 'grid', placeItems: 'center',
+                background: clickOnly ? 'var(--mantine-color-brand-7)' : 'var(--mantine-color-dark-6)',
+                color: clickOnly ? '#fff' : 'var(--mantine-color-dimmed)',
+              }}
+            >
+              <IconMetronome size={20} />
+            </Box>
+            <Box style={{ minWidth: 0 }}>
+              <Text fw={600}>Bez podkładu — sam metronom</Text>
+              <Text size="xs" c="dimmed">Tylko klik w wybranym tempie. Takty liczą się tak samo.</Text>
+            </Box>
+          </Group>
+        </Paper>
+
         {tracks.length === 0 && !loading ? (
           <Alert color="yellow" variant="light" icon={<IconMusicOff size={16} />}>
             Brak podkładów.{' '}
@@ -213,39 +253,49 @@ export function TrackStep() {
                   <IconPlayerTrackPrevFilled size={18} />
                 </ActionIcon>
               </Tooltip>
-              <Box style={{ flex: 1 }}>
-                <Slider
-                  min={0}
-                  max={Math.max(1000, durationMs)}
-                  step={100}
-                  color="brand"
-                  label={(v) => fmtTime(v)}
-                  value={seekMs ?? snap.timeMs}
-                  onChange={setSeekMs}
-                  onChangeEnd={(v) => { engine.seekMs(v); setSeekMs(null); }}
-                />
-              </Box>
+              {clickOnly ? (
+                <Text size="xs" c="dimmed" style={{ flex: 1 }}>
+                  Sam klik — takty liczymy od pierwszego uderzenia.
+                </Text>
+              ) : (
+                <Box style={{ flex: 1 }}>
+                  <Slider
+                    min={0}
+                    max={Math.max(1000, durationMs)}
+                    step={100}
+                    color="brand"
+                    label={(v) => fmtTime(v)}
+                    value={seekMs ?? snap.timeMs}
+                    onChange={setSeekMs}
+                    onChangeEnd={(v) => { engine.seekMs(v); setSeekMs(null); }}
+                  />
+                </Box>
+              )}
               <Text
                 size="xs" ff="monospace" c="dimmed" visibleFrom="xs"
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {fmtTime(seekMs ?? snap.timeMs)} / {fmtTime(durationMs)}
+                {fmtTime(seekMs ?? snap.timeMs)}{clickOnly ? '' : ` / ${fmtTime(durationMs)}`}
               </Text>
             </Group>
 
             <Text size="xs" ff="monospace" c="dimmed" ta="center" hiddenFrom="xs" mt={-8}>
-              {fmtTime(seekMs ?? snap.timeMs)} / {fmtTime(durationMs)}
+              {fmtTime(seekMs ?? snap.timeMs)}{clickOnly ? '' : ` / ${fmtTime(durationMs)}`}
             </Text>
 
             {/* live bar / beat feedback + metronome */}
             <Group justify="space-between" wrap="wrap" gap="md">
               <Group gap="lg" wrap="wrap">
-                <Switch
-                  label="Metronom"
-                  checked={settings.clickEnabled}
-                  color="brand"
-                  onChange={(e) => patchSettings({ clickEnabled: e.currentTarget.checked })}
-                />
+                {clickOnly ? (
+                  <Badge variant="light" color="brand" size="lg">metronom zawsze gra</Badge>
+                ) : (
+                  <Switch
+                    label="Metronom"
+                    checked={settings.clickEnabled}
+                    color="brand"
+                    onChange={(e) => patchSettings({ clickEnabled: e.currentTarget.checked })}
+                  />
+                )}
                 <BeatPulse beatsPerBar={beatsPerBar} beat={snap.beat} active={isPlaying} />
               </Group>
               <Group gap="xs">
@@ -264,6 +314,7 @@ export function TrackStep() {
 
             {/* everything below is per-track fine-tuning — collapsed by default */}
             <Box>
+              {!clickOnly && (
               <Button
                 variant={tuning ? 'light' : 'default'}
                 color="brand"
@@ -279,18 +330,19 @@ export function TrackStep() {
               >
                 Dopasuj podkład
               </Button>
-              {!tuning && (
+              )}
+              {!tuning && !clickOnly && (
                 <Text size="xs" c="dimmed" mt={6}>
                   Tempo, pierwsza jedynka, intro i głośności.
                 </Text>
               )}
 
-              <Collapse in={tuning}>
+              <Collapse in={tuning || clickOnly}>
                 <Stack gap="lg" mt="md">
                   {/* BPM */}
                   <Stack gap={6}>
                     <Group justify="space-between">
-                      <Text size="sm" fw={600}>Tempo podkładu</Text>
+                      <Text size="sm" fw={600}>{clickOnly ? 'Tempo metronomu' : 'Tempo podkładu'}</Text>
                       <Text size="sm" c="brand.4" fw={700}>{fmtBpm(track.bpm)} BPM</Text>
                     </Group>
                     <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
@@ -351,7 +403,8 @@ export function TrackStep() {
                         label={(v) => `${Math.round(v * 100)}%`}
                       />
                     </Group>
-                    <Group gap="xs">
+                    {!clickOnly && (
+                      <Group gap="xs">
                       <Text size="xs" c="dimmed">Prędkość</Text>
                       <SegmentedControl
                         size="xs"
@@ -365,9 +418,10 @@ export function TrackStep() {
                         ]}
                       />
                     </Group>
+                    )}
                   </Group>
 
-                  {/* downbeat */}
+                  {!clickOnly && (<>{/* downbeat */}
                   <Paper withBorder p="sm" radius="sm" bg="rgba(255,255,255,0.02)">
                     <Group justify="space-between" wrap="wrap" gap="sm">
                       <Box>
@@ -395,7 +449,7 @@ export function TrackStep() {
                         </Button.Group>
                       </Stack>
                     </Group>
-                  </Paper>
+                  </Paper></>)}
 
                   {/* intro */}
                   <Paper withBorder p="sm" radius="sm" bg="rgba(255,255,255,0.02)">

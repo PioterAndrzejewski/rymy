@@ -1,6 +1,7 @@
 export type TimeSignature = [number, number]; // [beatsPerBar, beatUnit]
 
-export type TrackSource = 'manifest' | 'user';
+// 'none' = the metronome-only pseudo-track (no audio file at all)
+export type TrackSource = 'manifest' | 'user' | 'none';
 
 export type Track = {
   id: string;

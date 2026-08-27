@@ -7,9 +7,14 @@ export const THEMED_RATIO = 0.6;
 export const TOPIC_COUNT = STORY_TOPICS.length;
 
 export type StoryConfig = {
-  /** 'pick' = user typed a topic now; 'auto' = drawn when the exercise starts */
-  topicMode: 'pick' | 'auto';
+  /**
+   * 'pick' = user typed a topic now; 'auto' = drawn when the exercise starts;
+   * 'none' = no topic at all, the user pastes the keyword list and starts.
+   */
+  topicMode: 'pick' | 'auto' | 'none';
   topic: string;
+  /** keyword list for topicMode 'none' — one word per line */
+  directWords: string;
   /** 'own' = user writes keywords during the exercise; 'auto' = drawn from the bank */
   wordsMode: 'own' | 'auto';
   slots: number;
@@ -23,6 +28,7 @@ export type StoryConfig = {
 export const defaultStoryConfig: StoryConfig = {
   topicMode: 'auto',
   topic: '',
+  directWords: '',
   wordsMode: 'auto',
   slots: 8,
   level: 3,
@@ -30,6 +36,14 @@ export const defaultStoryConfig: StoryConfig = {
   memorizeSec: 10,
   writeLimitSec: 0,
 };
+
+/** Keywords typed straight into the "po prostu wpiszę słowa" box. */
+export function parseDirectWords(text: string): string[] {
+  return text
+    .split(/[\n,]+/)
+    .map((w) => w.trim())
+    .filter(Boolean);
+}
 
 export const SLOT_CHOICES = [4, 6, 8, 10];
 
