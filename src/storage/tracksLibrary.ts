@@ -2,8 +2,13 @@ import type { ManifestFile, Track } from '@/types';
 import { clearOverride, getOverride, scopeFor } from './trackOverrides';
 import { getUserTrack, listUserTracks } from './userTracks';
 
+/** Manifest paths are written root-relative; the deploy may live in a subfolder. */
+export function publicUrl(path: string): string {
+  return import.meta.env.BASE_URL.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
+}
+
 export async function loadLibrary(): Promise<Track[]> {
-  const manifest = await fetch('/tracks/tracks.json')
+  const manifest = await fetch(publicUrl('tracks/tracks.json'))
     .then((r) => (r.ok ? (r.json() as Promise<ManifestFile>) : { tracks: [] }))
     .catch(() => ({ tracks: [] as ManifestFile['tracks'] }));
 
@@ -47,7 +52,7 @@ export async function loadLibrary(): Promise<Track[]> {
 export async function resolveTrackSrc(t: Track): Promise<string> {
   if (t.source === 'manifest') {
     if (!t.path) throw new Error(`manifest track ${t.id} missing path`);
-    return t.path;
+    return publicUrl(t.path);
   }
   const rec = await getUserTrack(t.id);
   if (!rec) throw new Error(`user track ${t.id} not found in IndexedDB`);
