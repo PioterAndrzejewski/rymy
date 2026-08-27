@@ -87,6 +87,11 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
   const currentIdx = phase === 'play' && currentBar >= introBars
     ? Math.max(0, Math.min(config.slots - 1, Math.floor((currentBar - introBars) / config.barsPerKeyword)))
     : -1;
+  // The keyword lands on the last bar of its group, so this is how many bars
+  // you still have to fill before it has to fall.
+  const barsToCue = currentIdx >= 0
+    ? config.barsPerKeyword - 1 - ((currentBar - introBars) % config.barsPerKeyword)
+    : -1;
   const isPlaying = engineState === 'playing';
   const progress = totalBars > 0 ? Math.min(100, (currentBar / totalBars) * 100) : 0;
 
@@ -226,12 +231,21 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
               >
                 {hideWords && !active ? '•••' : k}
               </Text>
+              {active && (
+                <Text size="10px" tt="uppercase" lts={1} c={barsToCue === 0 ? 'brand.4' : 'dimmed'} fw={700}>
+                  {barsToCue === 0 ? 'teraz!' : `za ${barsToCue} ${barsLabel(barsToCue)}`}
+                </Text>
+              )}
             </Paper>
           );
         })}
       </SimpleGrid>
     </Stack>
   );
+}
+
+function barsLabel(n: number): string {
+  return n === 1 ? 'takt' : n < 5 ? 'takty' : 'taktów';
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
