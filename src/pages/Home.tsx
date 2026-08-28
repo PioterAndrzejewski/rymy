@@ -8,7 +8,7 @@ import {
   Group,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
-import { IconRepeat, IconBook2 } from "@tabler/icons-react";
+import { IconRepeat, IconBook2, IconBuildingCastle } from "@tabler/icons-react";
 
 const modes = [
   {
@@ -24,6 +24,13 @@ const modes = [
     desc: "Temat i słowa klucze, chwila na zapamiętanie, potem śpiewasz.",
     icon: IconBook2,
     tag: "4 kroki",
+  },
+  {
+    slug: "palace",
+    label: "Pałac mentalny",
+    desc: "Słowa w pokojach, rozproszenie, a potem odtwarzasz je w kolejności.",
+    icon: IconBuildingCastle,
+    tag: "pamięć",
   },
 ];
 

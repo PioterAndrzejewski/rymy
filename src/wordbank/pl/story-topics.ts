@@ -194,3 +194,8 @@ export function randomTopics(count: number): StoryTopic[] {
   }
   return out;
 }
+
+/** Wszystkie słowa z jednej kategorii — używa ich też tryb „Pałac mentalny". */
+export function categoryWords(id: CategoryId): string[] {
+  return WORDS[id];
+}
