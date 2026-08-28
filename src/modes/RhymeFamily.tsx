@@ -32,10 +32,7 @@ import {
 } from "@/components/wizard/StepShell";
 import { ReadyPanel } from "@/components/wizard/ReadyPanel";
 import { ChoiceCard } from "@/components/wizard/ChoiceCard";
-import {
-  RHYME_ENDINGS,
-  rhymeCount,
-} from "@/wordbank/pl/rhymes";
+import { RHYME_ENDINGS, rhymeCount } from "@/wordbank/pl/rhymes";
 import { loadProgress } from "@/storage/rhymeProgress";
 import { RhymeRun } from "./family/RhymeRun";
 import { ProgressPanel } from "./family/ProgressPanel";
@@ -118,9 +115,10 @@ export function RhymeFamily() {
     {
       id: "timer",
       label: "Tryb",
-      hint: config.sessionMode === 'timed'
-        ? `słowo na czas · ${config.wordSeconds} s`
-        : `${sessionModeLabel(config)} · ${fmtDuration(config.seconds)}`,
+      hint:
+        config.sessionMode === "timed"
+          ? `słowo na czas · ${config.wordSeconds} s`
+          : `${sessionModeLabel(config)} · ${fmtDuration(config.seconds)}`,
       complete: true,
     },
     { id: "start", label: "Start", hint: undefined, complete: true },
@@ -241,14 +239,14 @@ export function RhymeFamily() {
                         {planReason(planPick)}.
                       </>
                     ) : (
-                      "Pierwsza runda pójdzie na rozpoznanie, potem program się dostroi."
+                      ""
                     )}
                   </Text>
                 </ChoiceCard>
                 <ChoiceCard
                   icon={<IconDice5 size={20} />}
                   title="Losowa"
-                  description="Poznasz ją dopiero po starcie — zero czasu na ściąganie."
+                  description="Poznasz ją dopiero po starcie"
                   selected={config.ending === "random"}
                   onSelect={() => patch({ ending: "random" })}
                 />
@@ -404,30 +402,31 @@ export function RhymeFamily() {
             </Section>
 
             <Section title="Długość rundy">
-              {config.sessionMode === 'timed' ? (
+              {config.sessionMode === "timed" ? (
                 <Text size="xs" c="dimmed">
-                  W trybie "Słowo na czas" nie ma limitu całej rundy — seria trwa, dopóki dajesz radę.
+                  W trybie "Słowo na czas" nie ma limitu całej rundy — seria
+                  trwa, dopóki dajesz radę.
                 </Text>
               ) : (
-              <Group gap="xs" wrap="wrap">
-                {DURATIONS.map((sec) => (
-                  <Button
-                    key={sec}
-                    size="md"
-                    variant={config.seconds === sec ? "filled" : "default"}
-                    color="brand"
-                    onClick={() => patch({ seconds: sec })}
-                  >
-                    {fmtDuration(sec)}
-                  </Button>
-                ))}
-              </Group>
+                <Group gap="xs" wrap="wrap">
+                  {DURATIONS.map((sec) => (
+                    <Button
+                      key={sec}
+                      size="md"
+                      variant={config.seconds === sec ? "filled" : "default"}
+                      color="brand"
+                      onClick={() => patch({ seconds: sec })}
+                    >
+                      {fmtDuration(sec)}
+                    </Button>
+                  ))}
+                </Group>
               )}
-              {config.sessionMode !== 'timed' && (
-              <Text size="xs" c="dimmed" mt="xs">
-                Krótka runda = sprint na skojarzenia. Dłuższa = kopiesz głębiej
-                w rodzinę rymów.
-              </Text>
+              {config.sessionMode !== "timed" && (
+                <Text size="xs" c="dimmed" mt="xs">
+                  Krótka runda = sprint na skojarzenia. Dłuższa = kopiesz
+                  głębiej w rodzinę rymów.
+                </Text>
               )}
             </Section>
             <Section
@@ -507,8 +506,13 @@ export function RhymeFamily() {
                         : `-${config.ending}`,
               },
               { label: "Tryb", value: sessionModeLabel(config) },
-              ...(config.sessionMode === 'timed'
-                ? [{ label: "Sekund na słowo", value: `${config.wordSeconds} s` }]
+              ...(config.sessionMode === "timed"
+                ? [
+                    {
+                      label: "Sekund na słowo",
+                      value: `${config.wordSeconds} s`,
+                    },
+                  ]
                 : [{ label: "Czas", value: fmtDuration(config.seconds) }]),
               {
                 label: "Metronom",
@@ -528,9 +532,10 @@ export function RhymeFamily() {
                   ]
                 : []),
             ]}
-            note={config.sessionMode === 'timed'
-              ? `Wpisz jeden rym i zatwierdź Enterem — słowo przeskakuje od razu. Nie zdążysz w ${config.wordSeconds} s — seria się kończy. Wynik to liczba słów z rzędu.`
-              : "Wpisuj rymy i zatwierdzaj Enterem. Słowo, które się nie rymuje, odbije się od pola — do banku trafia tylko to, co naprawdę pasuje."
+            note={
+              config.sessionMode === "timed"
+                ? `Wpisz jeden rym i zatwierdź Enterem — słowo przeskakuje od razu. Nie zdążysz w ${config.wordSeconds} s — seria się kończy. Wynik to liczba słów z rzędu.`
+                : "Wpisuj rymy i zatwierdzaj Enterem. Słowo, które się nie rymuje, odbije się od pola — do banku trafia tylko to, co naprawdę pasuje."
             }
           >
             <Paper withBorder p="md" radius="md" bg="rgba(255,255,255,0.02)">

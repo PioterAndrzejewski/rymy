@@ -164,7 +164,7 @@ export function VerseMode() {
               <ChoiceCard
                 icon={<IconDice5 size={20} />}
                 title="Losowe"
-                description="Poznasz je po starcie — zero czasu na przygotowanie."
+                description="Poznasz je po starcie"
                 selected={config.start === "random"}
                 onSelect={() => patch({ start: "random", startWord: "" })}
               />
