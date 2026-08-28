@@ -5,8 +5,11 @@ export type SessionMode =
   | 'timed'; // a new word every X seconds
 
 export type FamilyConfig = {
-  /** 'random' = drawn when the exercise starts (and again for every new word) */
-  ending: string | 'random';
+  /**
+   * 'random' = drawn when the exercise starts (and again for every new word)
+   * 'plan'   = drawn by the programme — your weakest family (see review.ts)
+   */
+  ending: string | 'random' | 'plan';
   /** round length in seconds */
   seconds: number;
   /** 0 = metronome off */
@@ -16,15 +19,23 @@ export type FamilyConfig = {
   quota: number;
   /** seconds per word in 'timed' mode */
   wordSeconds: number;
+  /** zacznij rundę z włączonym mikrofonem (da się przełączyć w trakcie) */
+  voice: boolean;
 };
 
+/** Końcówka nie jest wybrana ręcznie — dobiera ją losowanie albo program. */
+export function isAutoEnding(e: FamilyConfig['ending']): e is 'random' | 'plan' {
+  return e === 'random' || e === 'plan';
+}
+
 export const defaultFamilyConfig: FamilyConfig = {
-  ending: 'random',
+  ending: 'plan',
   seconds: 30,
   bpm: 0,
   sessionMode: 'single',
   quota: 3,
   wordSeconds: 30,
+  voice: false,
 };
 
 export const DURATIONS = [10, 20, 30, 60, 120];

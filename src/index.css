@@ -73,3 +73,14 @@ body { overflow-wrap: break-word; -webkit-text-size-adjust: 100%; }
 @media (hover: none) {
   .rymy-clickable:hover { transform: none; }
 }
+
+/* Mikrofon nasłuchuje — jedyny sygnał, że aplikacja wciąż cię słyszy. */
+@keyframes rymy-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 49, 49, 0.55); }
+  70%      { box-shadow: 0 0 0 12px rgba(224, 49, 49, 0); }
+}
+.rymy-pulse { animation: rymy-pulse 1.6s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rymy-pulse { animation: none; }
+}

@@ -49,3 +49,165 @@ export function rhymeCount(ending: string): number {
 export function randomRhymeEnding(): RhymeEnding {
   return RHYME_ENDINGS[Math.floor(Math.random() * RHYME_ENDINGS.length)];
 }
+
+// ---------------------------------------------------------------------------
+// Czy to w ogóle rym?
+// ---------------------------------------------------------------------------
+
+/**
+ * Zapis ≠ dźwięk. Do porównania końcówek sprowadzamy ogonek słowa do postaci
+ * „jak brzmi": y=i (dolina/dziewczyna), ó=u, rz=ż. Bez tego wpisany rym
+ * odpadłby tylko dlatego, że po polsku pisze się go inną literą.
+ */
+function phonetic(s: string): string {
+  return s.toLowerCase().replace(/rz/g, 'ż').replace(/y/g, 'i').replace(/ó/g, 'u');
+}
+
+/** Czy `word` kończy się tak jak rodzina `ending` (i nie jest samą końcówką). */
+export function matchesEnding(word: string, ending: string): boolean {
+  const w = word.trim().toLowerCase();
+  if (w.length <= ending.length) return false;
+  return phonetic(w.slice(-ending.length)) === phonetic(ending);
+}
+
+/** Czy słowo jest w naszym banku dla tej końcówki. */
+export function isInBank(word: string, ending: string): boolean {
+  return rhymeWords(ending).includes(word.trim().toLowerCase());
+}
+
+// ---------------------------------------------------------------------------
+// Które słowa warto mieć w głowie
+// ---------------------------------------------------------------------------
+
+const VOWELS = 'aąeęioóuy';
+
+/** Sylaby po polsku ≈ samogłoski; „i" przed samogłoską tylko zmiękcza (ciasto = 2). */
+export function syllables(word: string): number {
+  const w = word.toLowerCase();
+  let n = 0;
+  for (let i = 0; i < w.length; i++) {
+    if (!VOWELS.includes(w[i])) continue;
+    if (w[i] === 'i' && i + 1 < w.length && VOWELS.includes(w[i + 1])) continue;
+    n++;
+  }
+  return n;
+}
+
+const PREFIXES = ['niedo', 'najbardziej', 'nie', 'naj', 'roz', 'prze', 'przy', 'wy', 'za', 'po', 'od', 'pod', 'nad', 'do', 'ob', 'o', 'u', 's', 'z', 'w'];
+
+/**
+ * Im niżej, tym bardziej warto to słowo pamiętać.
+ *
+ * Zasada: nie ma sensu wkuwać słowa, które i tak wyprodukujesz w locie.
+ * „nieprzytomność" to „przytomność" z przedrostkiem, a „ogólnikowość" to sześć
+ * sylab, których nigdy nie zaśpiewasz — jedno i drugie zjada powtórki, które
+ * powinny iść na krótkie, konkretne słowa.
+ */
+function memoScore(word: string, family: Set<string>): number {
+  const derived = PREFIXES.some((p) => word.startsWith(p) && family.has(word.slice(p.length)));
+  return syllables(word) + (derived ? 2 : 0) + (word.length > 12 ? 1 : 0);
+}
+
+const coreCache = new Map<string, string[]>();
+
+/**
+ * Trzon rodziny: słowa uszeregowane od najbardziej „śpiewalnych".
+ * To one liczą się do postępu i one wracają w powtórkach — reszta banku wciąż
+ * jest akceptowana, jeśli sam ją wpiszesz.
+ */
+export function corePool(ending: string): string[] {
+  const hit = coreCache.get(ending);
+  if (hit) return hit;
+  const all = rhymeWords(ending);
+  const family = new Set(all);
+  const size = Math.min(all.length, Math.max(20, Math.round(all.length * 0.5)));
+  const core = [...all]
+    .sort((a, b) => memoScore(a, family) - memoScore(b, family) || a.localeCompare(b, 'pl'))
+    .slice(0, size);
+  coreCache.set(ending, core);
+  return core;
+}
+
+export function coreCount(ending: string): number {
+  return corePool(ending).length;
+}
+
+// ---------------------------------------------------------------------------
+// Co usłyszał mikrofon
+// ---------------------------------------------------------------------------
+
+export type HeardMatch =
+  | { kind: 'bank'; word: string }    // trafienie w bank (może po korekcie)
+  | { kind: 'own'; word: string }     // spoza banku, ale końcówka się zgadza
+  | { kind: 'reject'; word: string }; // nie rym albo szum
+
+/** Odległość Levenshteina, dwa wiersze — bank ma ~200 słów, liczymy na bieżąco. */
+function levenshtein(a: string, b: string, max: number): number {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  let curr = new Array<number>(b.length + 1);
+  for (let i = 1; i <= a.length; i++) {
+    curr[0] = i;
+    let best = curr[0];
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+      if (curr[j] < best) best = curr[j];
+    }
+    // cały wiersz gorszy niż próg — dalej może być tylko gorzej
+    if (best > max) return max + 1;
+    [prev, curr] = [curr, prev];
+  }
+  return prev[b.length];
+}
+
+/** Krótkie słowa przyklejają się do wszystkiego, więc korygujemy tylko dłuższe. */
+const MIN_FUZZY_LENGTH = 6;
+
+/**
+ * Dopasowanie usłyszanego słowa do rodziny rymów.
+ *
+ * Rozpoznawanie mowy ciągnie w stronę częstych słów — „zdolność" wraca jako
+ * „zdolnść", „wolność" jako „wolnosc". Sam bank rymów jest tu słownikiem
+ * korekcyjnym: token o dwie literówki od słowa z rodziny przyjmujemy jako
+ * wersję z banku, inaczej mikrofon gubiłby połowę trafień.
+ *
+ * Próg zależy od tego, czy usłyszane słowo samo w sobie jest poprawnym rymem:
+ *
+ * - **nie jest** (jak „zdolnść") — to na pewno przekręcenie, korygujemy do
+ *   odległości 2,
+ * - **jest** (jak „gibkość") — to prawdopodobnie twoje własne słowo, więc
+ *   podmieniamy je tylko przy oczywistej literówce (odległość 1).
+ *
+ * Bez tego rozróżnienia korekta zjadała autorskie rymy: „gibkość" wracało jako
+ * „giętkość", czyli aplikacja zapisywała coś, czego nie powiedziałeś, i jeszcze
+ * doliczała to sobie do pokrycia banku.
+ */
+export function matchHeard(token: string, ending: string): HeardMatch {
+  const word = token.trim().toLowerCase();
+  if (!word) return { kind: 'reject', word: token };
+
+  const bank = rhymeWords(ending);
+  if (bank.includes(word)) return { kind: 'bank', word };
+
+  const rhymesAsHeard = matchesEnding(word, ending);
+  const maxDistance = rhymesAsHeard ? 1 : 2;
+
+  if (word.length >= MIN_FUZZY_LENGTH) {
+    let best = '';
+    let bestDist = maxDistance + 1;
+    for (const candidate of bank) {
+      // porównujemy tylko z sensownie podobnej długości
+      if (Math.abs(candidate.length - word.length) > maxDistance) continue;
+      const d = levenshtein(word, candidate, maxDistance);
+      if (d < bestDist) { bestDist = d; best = candidate; }
+      if (d === 1) break; // bliżej niż o jedną literę już nie będzie
+    }
+    if (best && bestDist <= maxDistance) return { kind: 'bank', word: best };
+  }
+
+  // Twój własny rym: nie ma go u nas, ale końcówka się zgadza.
+  if (rhymesAsHeard) return { kind: 'own', word };
+
+  return { kind: 'reject', word };
+}
