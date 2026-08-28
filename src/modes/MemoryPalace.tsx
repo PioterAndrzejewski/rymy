@@ -4,7 +4,6 @@ import {
   Button,
   Collapse,
   Group,
-  Paper,
   SimpleGrid,
   Stack,
   Switch,
