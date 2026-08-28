@@ -12,18 +12,18 @@ import { IconRepeat, IconBook2 } from "@tabler/icons-react";
 
 const modes = [
   {
-    slug: "story",
-    label: "Historia",
-    desc: "Temat i słowa klucze, chwila na zapamiętanie, potem śpiewasz.",
-    icon: IconBook2,
-    tag: "4 kroki",
-  },
-  {
     slug: "family",
     label: "Wypluj się z rymów",
     desc: "Jedna końcówka, zegar i tyle rymów, ile zdążysz wypluć.",
     icon: IconRepeat,
     tag: "bez podkładu",
+  },
+  {
+    slug: "story",
+    label: "Historia",
+    desc: "Temat i słowa klucze, chwila na zapamiętanie, potem śpiewasz.",
+    icon: IconBook2,
+    tag: "4 kroki",
   },
 ];
 

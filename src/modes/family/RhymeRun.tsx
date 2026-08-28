@@ -183,25 +183,99 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
   useEffect(() => () => window.clearTimeout(noiseTimer.current), []);
 
-  function handleHeard(tokens: string[]) {
-    for (const token of tokens) {
-      const heard = matchHeard(token, ending);
+  /**
+   * Usłyszane słowa nie wpadają prosto na listę — najpierw lądują w polu
+   * wpisu i dostają ten sam błysk co słowo wpisane z klawiatury: zielony,
+   * gdy weszło, czerwony, gdy odpadło. Dzięki temu widać, co mikrofon
+   * usłyszał i co z tym zrobiliśmy, zanim słowo trafi między zaliczone.
+   *
+   * Seria słów z jednego ticku idzie przez kolejkę, jedno po drugim — inaczej
+   * zdążyłoby się przewinąć w polu, zanim zdążysz cokolwiek zobaczyć.
+   */
+  const ECHO_HOLD = 260;  // ile słowo wisi w polu, zanim je ocenimy
+  const ECHO_FLASH = 340; // ile trwa sam błysk
+
+  const heardQueue = useRef<string[]>([]);
+  const echoRef = useRef(false);
+  const echoTimers = useRef<number[]>([]);
+  const draft = useRef('');           // to, co pisałeś, gdy wszedł mikrofon
+  const [echo, setEcho] = useState(false);
+  const [flash, setFlash] = useState<'ok' | 'bad' | null>(null);
+
+  const laterEcho = (fn: () => void, ms: number) => {
+    echoTimers.current.push(window.setTimeout(fn, ms));
+  };
+
+  function clearEcho() {
+    echoTimers.current.forEach(window.clearTimeout);
+    echoTimers.current = [];
+    heardQueue.current = [];
+    setEcho(false);
+    setFlash(null);
+  }
+
+  function pumpHeard() {
+    if (echoRef.current) return;
+    const token = heardQueue.current.shift();
+    if (token === undefined) {
+      // Koniec serii — oddajemy pole z powrotem temu, co pisałeś.
+      if (draft.current) { setInput(draft.current); draft.current = ''; }
+      return;
+    }
+
+    const heard = matchHeard(token, ending);
+    echoRef.current = true;
+    setEcho(true);
+    setInput(heard.word);
+
+    laterEcho(() => {
+      let ok = false;
       if (heard.kind === 'reject') {
         pushNoise(heard.word, 'reject');
-        continue;
+      } else {
+        const result = accept(heard.word);
+        if (result === 'duplicate' || result === 'seed') {
+          // Duplikat z głosu nie trzęsie polem — przy ciągłym nasłuchu
+          // powtórzenia są normalne, nie pomyłką.
+          pushNoise(heard.word, 'dup');
+        } else {
+          ok = true;
+        }
+        // Zaliczona kwota przeskoczyła na nowe słowo — reszta serii dotyczyła
+        // jeszcze poprzedniego, więc ją odpuszczamy.
+        if (result === 'advanced') heardQueue.current = [];
       }
-      const result = accept(heard.word);
-      if (result === 'duplicate' || result === 'seed') {
-        // Duplikat z głosu nie trzęsie polem — przy ciągłym nasłuchu
-        // powtórzenia są normalne, nie pomyłką.
-        pushNoise(heard.word, 'dup');
-        continue;
-      }
-      // Zaliczona kwota przeskoczyła na nowe słowo — reszta serii dotyczyła
-      // jeszcze poprzedniego, więc ją odpuszczamy.
-      if (result === 'advanced') break;
-    }
+
+      setFlash(ok ? 'ok' : 'bad');
+      setInput(heard.word);
+      laterEcho(() => {
+        setFlash(null);
+        setInput('');
+        setEcho(false);
+        echoRef.current = false;
+        pumpRef.current();
+      }, ECHO_FLASH);
+    }, ECHO_HOLD);
   }
+
+  const pumpRef = useRef(pumpHeard);
+  pumpRef.current = pumpHeard;
+
+  function handleHeard(tokens: string[]) {
+    if (!echoRef.current && !heardQueue.current.length && input.trim()) draft.current = input.trim();
+    heardQueue.current.push(...tokens);
+    pumpHeard();
+  }
+
+  // Wyłączony mikrofon albo koniec rundy nie zostawia słowa wiszącego w polu.
+  useEffect(() => {
+    if (mic && running && !done) return;
+    clearEcho();
+    setInput((v) => (echoRef.current ? '' : v));
+    echoRef.current = false;
+  }, [mic, running, done]);
+
+  useEffect(() => clearEcho, []);
 
   const speech = useSpeechInput({
     enabled: mic && running && !done,
@@ -301,6 +375,8 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     if (result === 'seed') return reject('To słowo, do którego rymujesz.');
     setError('');
     setInput('');
+    setFlash('ok');
+    window.setTimeout(() => setFlash(null), 340);
   }
 
   /**
@@ -527,7 +603,10 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
           mt="lg"
           gap="sm"
         >
-          <div className={shake ? 'rymy-shake' : ''} style={{ flex: 1, maxWidth: 420, minWidth: 0 }}>
+          <div
+            className={shake || flash === 'bad' ? 'rymy-shake' : flash === 'ok' ? 'rymy-flash-ok' : ''}
+            style={{ flex: 1, maxWidth: 420, minWidth: 0 }}
+          >
             <TextInput
               ref={inputRef}
               size="lg"
@@ -536,6 +615,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
               onChange={(e) => { setInput(e.currentTarget.value); if (error) setError(''); }}
               onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
               disabled={!running}
+              readOnly={echo}
               autoComplete="off"
               autoCapitalize="none"
               autoCorrect="off"
@@ -545,7 +625,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
             />
           </div>
           <Group gap="sm" wrap="nowrap" justify="center">
-            <Button size="lg" color="brand" onClick={submit} disabled={!input.trim() || !running}>
+            <Button size="lg" color="brand" onClick={submit} disabled={!input.trim() || !running || echo}>
               Dodaj
             </Button>
             {speech.supported && (

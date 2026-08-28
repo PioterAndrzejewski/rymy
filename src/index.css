@@ -19,6 +19,22 @@ body { background: var(--mantine-color-body); color: var(--mantine-color-text); 
   box-shadow: 0 0 0 2px rgba(255, 76, 76, 0.25) !important;
 }
 
+/* Zielony błysk pola: słowo weszło (z klawiatury albo z mikrofonu). */
+@keyframes rymy-flash-ok {
+  0%   { transform: scale(1);    }
+  35%  { transform: scale(1.03); }
+  100% { transform: scale(1);    }
+}
+.rymy-flash-ok { animation: rymy-flash-ok 320ms ease-out; }
+.rymy-flash-ok input {
+  border-color: var(--mantine-color-teal-5) !important;
+  box-shadow: 0 0 0 2px rgba(18, 184, 134, 0.3) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rymy-shake, .rymy-flash-ok { animation: none; }
+}
+
 /* ---- wizard / exercise UX ---------------------------------------------- */
 
 @keyframes rymy-pop {

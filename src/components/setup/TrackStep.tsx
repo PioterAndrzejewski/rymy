@@ -6,7 +6,7 @@ import {
 import {
   IconAdjustmentsHorizontal, IconChevronDown, IconHandFinger,
   IconMinus, IconMusicOff, IconPlayerPlayFilled, IconPlayerPauseFilled,
-  IconMetronome, IconPlayerTrackPrevFilled, IconPlus, IconRestore, IconTargetArrow,
+  IconMetronome, IconPencil, IconPlayerTrackPrevFilled, IconPlus, IconRestore, IconTargetArrow,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { Link } from 'react-router-dom';
@@ -165,6 +165,15 @@ export function TrackStep() {
             {loading && <Text size="xs" c="dimmed">ładowanie…</Text>}
             {error && <Text size="xs" c="red">błąd: {error}</Text>}
             <Badge variant="light" color="gray" size="sm">{tracks.length}</Badge>
+            <Button
+              component={Link}
+              to="/tracks"
+              size="sm"
+              variant="default"
+              leftSection={<IconPencil size={14} />}
+            >
+              Edytuj podkłady
+            </Button>
           </Group>
         }
       >
