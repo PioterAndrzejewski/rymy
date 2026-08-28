@@ -16,6 +16,11 @@ export class AudioEngine {
   private vStartedAt = 0;
   private vPlaying = false;
 
+  // Playback speed survives track switches: HTMLMediaElement.load() resets
+  // playbackRate to the default, so we re-apply ours once the file is ready.
+  private rate = 1;
+  private preservePitch = true;
+
   constructor() {
     this.el = new Audio();
     this.el.preload = 'auto';
@@ -70,6 +75,8 @@ export class AudioEngine {
       this.el.addEventListener('error', onError, { once: true });
       this.el.load();
     });
+    this.el.playbackRate = this.rate;
+    this.el.preservesPitch = this.preservePitch;
     this.setState('ready');
   }
 
@@ -124,5 +131,16 @@ export class AudioEngine {
   }
 
   setVolume(v: number): void { this.el.volume = Math.max(0, Math.min(1, v)); }
-  setPlaybackRate(r: number): void { this.el.playbackRate = r; this.el.preservesPitch = false; }
+  setPlaybackRate(r: number): void {
+    this.rate = r;
+    this.el.playbackRate = r;
+    this.el.preservesPitch = this.preservePitch;
+  }
+
+  setPreservePitch(on: boolean): void {
+    this.preservePitch = on;
+    this.el.preservesPitch = on;
+  }
+
+  get playbackRate(): number { return this.rate; }
 }

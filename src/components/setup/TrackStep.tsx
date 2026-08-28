@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActionIcon, Alert, Badge, Box, Button, Collapse, Group, NumberInput, Paper,
-  SegmentedControl, SimpleGrid, Slider, Stack, Switch, Text, Tooltip,
+  SimpleGrid, Slider, Stack, Switch, Text, Tooltip,
 } from '@mantine/core';
 import {
   IconAdjustmentsHorizontal, IconChevronDown, IconHandFinger,
@@ -42,7 +42,7 @@ export function TrackStep() {
   useClickDriver(track, { force: isClickOnly(track) });
 
   const [settings, setSettings] = useState<Settings>(() => loadSettings());
-  const [rate, setRate] = useState(1);
+  const [rate, setRate] = useState(() => engine.playbackRate);
   const [seekMs, setSeekMs] = useState<number | null>(null);
   const [tapBpm, setTapBpm] = useState<number | null>(null);
   const [tuning, setTuning] = useState(false);
@@ -136,9 +136,10 @@ export function TrackStep() {
   }
 
   function applyRate(r: number) {
-    setRate(r);
-    engine.setPlaybackRate(r);
-    engine.el.preservesPitch = settings.tempoMode === 'pitch-preserving';
+    const clamped = Math.round(r * 20) / 20;
+    setRate(clamped);
+    engine.setPreservePitch(settings.tempoMode === 'pitch-preserving');
+    engine.setPlaybackRate(clamped);
   }
 
   function tap() { setTapBpm(tapRef.current.tap()); }
@@ -297,6 +298,30 @@ export function TrackStep() {
                   />
                 )}
                 <BeatPulse beatsPerBar={beatsPerBar} beat={snap.beat} active={isPlaying} />
+                {!clickOnly && (
+                  <Group gap={8} wrap="nowrap" align="center" ml={{ base: 0, sm: 32 }}>
+                    <Text size="xs" c="dimmed">Prędkość</Text>
+                    <Slider
+                      w={110}
+                      size="sm"
+                      min={0.5} max={1.5} step={0.05}
+                      color="brand"
+                      value={rate}
+                      onChange={applyRate}
+                      label={(v) => `${v.toFixed(2)}×`}
+                      marks={[{ value: 1 }]}
+                    />
+                    <Text
+                      size="xs" ff="monospace" fw={600}
+                      c={rate === 1 ? 'dimmed' : 'brand.4'}
+                      style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      title="Wróć do 1×"
+                      onClick={() => applyRate(1)}
+                    >
+                      {rate.toFixed(2)}×
+                    </Text>
+                  </Group>
+                )}
               </Group>
               <Group gap="xs">
                 <Badge variant="light" color="gray">takt {snap.bar < 0 ? '–' : snap.bar + 1}</Badge>
@@ -333,7 +358,7 @@ export function TrackStep() {
               )}
               {!tuning && !clickOnly && (
                 <Text size="xs" c="dimmed" mt={6}>
-                  Tempo, pierwsza jedynka, intro i głośności.
+                  Tempo podkładu, pierwsza jedynka i głośności.
                 </Text>
               )}
 
@@ -403,22 +428,6 @@ export function TrackStep() {
                         label={(v) => `${Math.round(v * 100)}%`}
                       />
                     </Group>
-                    {!clickOnly && (
-                      <Group gap="xs">
-                      <Text size="xs" c="dimmed">Prędkość</Text>
-                      <SegmentedControl
-                        size="xs"
-                        value={String(rate)}
-                        onChange={(v) => applyRate(Number(v))}
-                        data={[
-                          { value: '0.75', label: '0.75×' },
-                          { value: '0.9', label: '0.9×' },
-                          { value: '1', label: '1×' },
-                          { value: '1.1', label: '1.1×' },
-                        ]}
-                      />
-                    </Group>
-                    )}
                   </Group>
 
                   {!clickOnly && (<>{/* downbeat */}

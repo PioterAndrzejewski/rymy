@@ -11,6 +11,7 @@ import { StoryWordsStep } from './story/StoryWordsStep';
 import { StoryRun } from './story/StoryRun';
 import { defaultStoryConfig, parseDirectWords, type StoryConfig } from './story/config';
 import { barsToTime, fmtBpm } from '@/lib/format';
+import { engine } from '@/audio/engineSingleton';
 
 export function StoryMode() {
   const navigate = useNavigate();
@@ -138,7 +139,12 @@ export function StoryMode() {
             headline="Gotowy?"
             items={[
               { label: 'Podkład', value: track?.name ?? '—' },
-              { label: 'Tempo', value: `${fmtBpm(track?.bpm)} BPM` },
+              {
+                label: 'Tempo',
+                value: engine.playbackRate === 1
+                  ? `${fmtBpm(track?.bpm)} BPM`
+                  : `${fmtBpm((track?.bpm ?? 0) * engine.playbackRate)} BPM (${engine.playbackRate.toFixed(2)}×)`,
+              },
               { label: 'Temat', value: direct ? 'bez tematu' : config.topicMode === 'auto' ? 'losowy 🎲' : config.topic },
               { label: 'Słowa', value: direct ? `${slots} własnych` : config.wordsMode === 'own' ? `${config.slots} własnych` : `${config.slots} z L${config.level}` },
               { label: 'Na słowo', value: `${config.barsPerKeyword} takty` },

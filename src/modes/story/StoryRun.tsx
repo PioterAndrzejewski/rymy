@@ -171,7 +171,7 @@ export function StoryRun({ config, onExit }: { config: StoryConfig; onExit: () =
         <CountIn
           key={runKey}
           beats={beatsPerBar}
-          bpm={track?.bpm ?? 90}
+          bpm={(track?.bpm ?? 90) * engine.playbackRate}
           label={introBars > 0 ? `Za chwilę intro (${introBars} taktów)` : 'Zaczynamy'}
           onDone={() => { setPhase('play'); void engine.play(); }}
         />

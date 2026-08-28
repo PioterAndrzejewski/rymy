@@ -51,6 +51,58 @@
       "introBars": 3,
       "style": "sad",
       "path": "/tracks/sad_70bpm_2.mp3"
+    },
+    {
+      "id": "hh-80-1",
+      "name": "Hiphop 1",
+      "bpm": 93,
+      "timeSignature": [
+        4,
+        4
+      ],
+      "downbeatOffsetMs": 2400,
+      "introBars": 0,
+      "style": "dark",
+      "path": "/tracks/hiphop_80bpm.mp3"
+    },
+    {
+      "id": "hh-120-2",
+      "name": "Hiphop 2",
+      "bpm": 87,
+      "timeSignature": [
+        4,
+        4
+      ],
+      "downbeatOffsetMs": -50,
+      "introBars": 1,
+      "style": "dark",
+      "path": "/tracks/hiphop_jazzy_120bpm.mp3"
+    },
+    {
+      "id": "hh-80-2",
+      "name": "Hiphop 3",
+      "bpm": 75,
+      "timeSignature": [
+        4,
+        4
+      ],
+      "downbeatOffsetMs": 880,
+      "introBars": 0,
+      "style": "dark",
+      "path": "/tracks/hiphop_jazzy_75bpm.mp3"
+    },
+    {
+      "id": "hh-80-4",
+      "name": "Hiphop 4",
+      "bpm": 87,
+      "timeSignature": [
+        4,
+        4
+      ],
+      "downbeatOffsetMs": -100,
+      "introBars": 3,
+      "style": "dark",
+      "path": "/tracks/hiphop_4_75.mp3"
     }
   ]
 }
