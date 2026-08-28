@@ -1,55 +1,323 @@
 {
   "level": 3,
   "language": "pl",
-  "description": "Adds 40 words (cumulative 100). 8 new rhyme families of 5.",
+  "description": "Adds 40 words (cumulative 100). 8 new rhyme families of 5. Rzeczowniki z częstymi zakończeniami — rodziny na -ina, -anka, -isko, -ność.",
   "extendsLevel": 2,
   "words": [
-    { "text": "boisko",      "rhymeEnding": "isko", "pos": "noun" },
-    { "text": "ognisko",     "rhymeEnding": "isko", "pos": "noun" },
-    { "text": "mrowisko",    "rhymeEnding": "isko", "pos": "noun" },
-    { "text": "siedlisko",   "rhymeEnding": "isko", "pos": "noun" },
-    { "text": "stanowisko",  "rhymeEnding": "isko", "pos": "noun" },
-
-    { "text": "gracz",       "rhymeEnding": "acz",  "pos": "noun" },
-    { "text": "tłumacz",     "rhymeEnding": "acz",  "pos": "noun" },
-    { "text": "palacz",      "rhymeEnding": "acz",  "pos": "noun" },
-    { "text": "słuchacz",    "rhymeEnding": "acz",  "pos": "noun" },
-    { "text": "biegacz",     "rhymeEnding": "acz",  "pos": "noun" },
-
-    { "text": "stół",        "rhymeEnding": "ół",   "pos": "noun" },
-    { "text": "ból",         "rhymeEnding": "ól",   "pos": "noun" },
-    { "text": "wół",         "rhymeEnding": "ół",   "pos": "noun" },
-    { "text": "dół",         "rhymeEnding": "ół",   "pos": "noun" },
-    { "text": "kościół",     "rhymeEnding": "ół",   "pos": "noun" },
-
-    { "text": "dzień",       "rhymeEnding": "eń",   "pos": "noun" },
-    { "text": "cień",        "rhymeEnding": "eń",   "pos": "noun" },
-    { "text": "jeleń",       "rhymeEnding": "eń",   "pos": "noun" },
-    { "text": "kamień",      "rhymeEnding": "eń",   "pos": "noun" },
-    { "text": "promień",     "rhymeEnding": "eń",   "pos": "noun" },
-
-    { "text": "kolor",       "rhymeEnding": "or",   "pos": "noun" },
-    { "text": "doktor",      "rhymeEnding": "or",   "pos": "noun" },
-    { "text": "aktor",       "rhymeEnding": "or",   "pos": "noun" },
-    { "text": "traktor",     "rhymeEnding": "or",   "pos": "noun" },
-    { "text": "motor",       "rhymeEnding": "or",   "pos": "noun" },
-
-    { "text": "student",     "rhymeEnding": "ent",  "pos": "noun" },
-    { "text": "klient",      "rhymeEnding": "ent",  "pos": "noun" },
-    { "text": "prezent",     "rhymeEnding": "ent",  "pos": "noun" },
-    { "text": "moment",      "rhymeEnding": "ent",  "pos": "noun" },
-    { "text": "dokument",    "rhymeEnding": "ent",  "pos": "noun" },
-
-    { "text": "komputer",    "rhymeEnding": "er",   "pos": "noun" },
-    { "text": "kelner",      "rhymeEnding": "er",   "pos": "noun" },
-    { "text": "rower",       "rhymeEnding": "er",   "pos": "noun" },
-    { "text": "oficer",      "rhymeEnding": "er",   "pos": "noun" },
-    { "text": "minister",    "rhymeEnding": "er",   "pos": "noun" },
-
-    { "text": "fizyka",      "rhymeEnding": "yka",  "pos": "noun" },
-    { "text": "muzyka",      "rhymeEnding": "yka",  "pos": "noun" },
-    { "text": "gramatyka",   "rhymeEnding": "yka",  "pos": "noun" },
-    { "text": "matematyka",  "rhymeEnding": "yka",  "pos": "noun" },
-    { "text": "technika",    "rhymeEnding": "ika",  "pos": "noun" }
+    {
+      "text": "boisko",
+      "rhymeEnding": "isko",
+      "pos": "noun"
+    },
+    {
+      "text": "ognisko",
+      "rhymeEnding": "isko",
+      "pos": "noun"
+    },
+    {
+      "text": "mrowisko",
+      "rhymeEnding": "isko",
+      "pos": "noun"
+    },
+    {
+      "text": "siedlisko",
+      "rhymeEnding": "isko",
+      "pos": "noun"
+    },
+    {
+      "text": "stanowisko",
+      "rhymeEnding": "isko",
+      "pos": "noun"
+    },
+    {
+      "text": "gracz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "tłumacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "palacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "słuchacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "biegacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "stół",
+      "rhymeEnding": "ół",
+      "pos": "noun"
+    },
+    {
+      "text": "wół",
+      "rhymeEnding": "ół",
+      "pos": "noun"
+    },
+    {
+      "text": "dół",
+      "rhymeEnding": "ół",
+      "pos": "noun"
+    },
+    {
+      "text": "kościół",
+      "rhymeEnding": "ół",
+      "pos": "noun"
+    },
+    {
+      "text": "dzień",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "cień",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "jeleń",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "kamień",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "promień",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "kolor",
+      "rhymeEnding": "or",
+      "pos": "noun"
+    },
+    {
+      "text": "doktor",
+      "rhymeEnding": "or",
+      "pos": "noun"
+    },
+    {
+      "text": "aktor",
+      "rhymeEnding": "or",
+      "pos": "noun"
+    },
+    {
+      "text": "traktor",
+      "rhymeEnding": "or",
+      "pos": "noun"
+    },
+    {
+      "text": "motor",
+      "rhymeEnding": "or",
+      "pos": "noun"
+    },
+    {
+      "text": "student",
+      "rhymeEnding": "ent",
+      "pos": "noun"
+    },
+    {
+      "text": "klient",
+      "rhymeEnding": "ent",
+      "pos": "noun"
+    },
+    {
+      "text": "prezent",
+      "rhymeEnding": "ent",
+      "pos": "noun"
+    },
+    {
+      "text": "moment",
+      "rhymeEnding": "ent",
+      "pos": "noun"
+    },
+    {
+      "text": "dokument",
+      "rhymeEnding": "ent",
+      "pos": "noun"
+    },
+    {
+      "text": "komputer",
+      "rhymeEnding": "er",
+      "pos": "noun"
+    },
+    {
+      "text": "kelner",
+      "rhymeEnding": "er",
+      "pos": "noun"
+    },
+    {
+      "text": "rower",
+      "rhymeEnding": "er",
+      "pos": "noun"
+    },
+    {
+      "text": "oficer",
+      "rhymeEnding": "er",
+      "pos": "noun"
+    },
+    {
+      "text": "minister",
+      "rhymeEnding": "er",
+      "pos": "noun"
+    },
+    {
+      "text": "fizyka",
+      "rhymeEnding": "yka",
+      "pos": "noun"
+    },
+    {
+      "text": "muzyka",
+      "rhymeEnding": "yka",
+      "pos": "noun"
+    },
+    {
+      "text": "gramatyka",
+      "rhymeEnding": "yka",
+      "pos": "noun"
+    },
+    {
+      "text": "matematyka",
+      "rhymeEnding": "yka",
+      "pos": "noun"
+    },
+    {
+      "text": "technika",
+      "rhymeEnding": "ika",
+      "pos": "noun"
+    },
+    {
+      "text": "nowina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "kraina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "drabina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "glina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "ślina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "wina",
+      "rhymeEnding": "ina"
+    },
+    {
+      "text": "maszyna",
+      "rhymeEnding": "yna"
+    },
+    {
+      "text": "przyczyna",
+      "rhymeEnding": "yna"
+    },
+    {
+      "text": "drużyna",
+      "rhymeEnding": "yna"
+    },
+    {
+      "text": "kuzyna",
+      "rhymeEnding": "yna"
+    },
+    {
+      "text": "koleżanka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "mieszanka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "niespodzianka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "szklanka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "kochanka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "skakanka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "poranka",
+      "rhymeEnding": "anka"
+    },
+    {
+      "text": "nazwisko",
+      "rhymeEnding": "isko"
+    },
+    {
+      "text": "lotnisko",
+      "rhymeEnding": "isko"
+    },
+    {
+      "text": "wysypisko",
+      "rhymeEnding": "isko"
+    },
+    {
+      "text": "zjawisko",
+      "rhymeEnding": "isko"
+    },
+    {
+      "text": "pewność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "trudność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "ciemność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "godność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "zgodność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "wdzięczność",
+      "rhymeEnding": "ność"
+    },
+    {
+      "text": "gotowy",
+      "rhymeEnding": "owy"
+    },
+    {
+      "text": "zdrowy",
+      "rhymeEnding": "owy"
+    },
+    {
+      "text": "surowy",
+      "rhymeEnding": "owy"
+    }
   ]
 }

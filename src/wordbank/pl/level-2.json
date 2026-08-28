@@ -1,43 +1,725 @@
 {
   "level": 2,
   "language": "pl",
-  "description": "Adds 30 words (cumulative 60). 6 new rhyme families of 5.",
+  "description": "Adds 30 words (cumulative 60). 6 new rhyme families of 5. Czasowniki i proste rymy śpiewane — bezokoliczniki, formy osobowe i zaimki.",
   "extendsLevel": 1,
   "words": [
-    { "text": "góra",     "rhymeEnding": "ura",  "pos": "noun" },
-    { "text": "dziura",   "rhymeEnding": "ura",  "pos": "noun" },
-    { "text": "natura",   "rhymeEnding": "ura",  "pos": "noun" },
-    { "text": "kultura",  "rhymeEnding": "ura",  "pos": "noun" },
-    { "text": "figura",   "rhymeEnding": "ura",  "pos": "noun" },
-
-    { "text": "kraj",     "rhymeEnding": "aj",   "pos": "noun" },
-    { "text": "gaj",      "rhymeEnding": "aj",   "pos": "noun" },
-    { "text": "zwyczaj",  "rhymeEnding": "aj",   "pos": "noun" },
-    { "text": "tramwaj",  "rhymeEnding": "aj",   "pos": "noun" },
-    { "text": "urodzaj",  "rhymeEnding": "aj",   "pos": "noun" },
-
-    { "text": "noc",      "rhymeEnding": "oc",   "pos": "noun" },
-    { "text": "moc",      "rhymeEnding": "oc",   "pos": "noun" },
-    { "text": "pomoc",    "rhymeEnding": "oc",   "pos": "noun" },
-    { "text": "przemoc",  "rhymeEnding": "oc",   "pos": "noun" },
-    { "text": "niemoc",   "rhymeEnding": "oc",   "pos": "noun" },
-
-    { "text": "chemik",     "rhymeEnding": "ik",  "pos": "noun" },
-    { "text": "technik",    "rhymeEnding": "ik",  "pos": "noun" },
-    { "text": "ogrodnik",   "rhymeEnding": "ik",  "pos": "noun" },
-    { "text": "robotnik",   "rhymeEnding": "ik",  "pos": "noun" },
-    { "text": "pracownik",  "rhymeEnding": "ik",  "pos": "noun" },
-
-    { "text": "chłopiec",   "rhymeEnding": "ec",  "pos": "noun" },
-    { "text": "ojciec",     "rhymeEnding": "ec",  "pos": "noun" },
-    { "text": "koniec",     "rhymeEnding": "ec",  "pos": "noun" },
-    { "text": "taniec",     "rhymeEnding": "ec",  "pos": "noun" },
-    { "text": "kupiec",     "rhymeEnding": "ec",  "pos": "noun" },
-
-    { "text": "wróg",       "rhymeEnding": "óg",  "pos": "noun" },
-    { "text": "próg",       "rhymeEnding": "óg",  "pos": "noun" },
-    { "text": "róg",        "rhymeEnding": "óg",  "pos": "noun" },
-    { "text": "pieróg",     "rhymeEnding": "óg",  "pos": "noun" },
-    { "text": "stóg",       "rhymeEnding": "óg",  "pos": "noun" }
+    {
+      "text": "góra",
+      "rhymeEnding": "óra",
+      "pos": "noun"
+    },
+    {
+      "text": "dziura",
+      "rhymeEnding": "ura",
+      "pos": "noun"
+    },
+    {
+      "text": "natura",
+      "rhymeEnding": "ura",
+      "pos": "noun"
+    },
+    {
+      "text": "kultura",
+      "rhymeEnding": "ura",
+      "pos": "noun"
+    },
+    {
+      "text": "figura",
+      "rhymeEnding": "ura",
+      "pos": "noun"
+    },
+    {
+      "text": "kraj",
+      "rhymeEnding": "aj",
+      "pos": "noun"
+    },
+    {
+      "text": "gaj",
+      "rhymeEnding": "aj",
+      "pos": "noun"
+    },
+    {
+      "text": "zwyczaj",
+      "rhymeEnding": "aj",
+      "pos": "noun"
+    },
+    {
+      "text": "tramwaj",
+      "rhymeEnding": "aj",
+      "pos": "noun"
+    },
+    {
+      "text": "urodzaj",
+      "rhymeEnding": "aj",
+      "pos": "noun"
+    },
+    {
+      "text": "moc",
+      "rhymeEnding": "oc",
+      "pos": "noun"
+    },
+    {
+      "text": "pomoc",
+      "rhymeEnding": "oc",
+      "pos": "noun"
+    },
+    {
+      "text": "przemoc",
+      "rhymeEnding": "oc",
+      "pos": "noun"
+    },
+    {
+      "text": "niemoc",
+      "rhymeEnding": "oc",
+      "pos": "noun"
+    },
+    {
+      "text": "chemik",
+      "rhymeEnding": "ik",
+      "pos": "noun"
+    },
+    {
+      "text": "technik",
+      "rhymeEnding": "ik",
+      "pos": "noun"
+    },
+    {
+      "text": "ogrodnik",
+      "rhymeEnding": "ik",
+      "pos": "noun"
+    },
+    {
+      "text": "robotnik",
+      "rhymeEnding": "ik",
+      "pos": "noun"
+    },
+    {
+      "text": "pracownik",
+      "rhymeEnding": "ik",
+      "pos": "noun"
+    },
+    {
+      "text": "chłopiec",
+      "rhymeEnding": "ec",
+      "pos": "noun"
+    },
+    {
+      "text": "ojciec",
+      "rhymeEnding": "ec",
+      "pos": "noun"
+    },
+    {
+      "text": "koniec",
+      "rhymeEnding": "ec",
+      "pos": "noun"
+    },
+    {
+      "text": "taniec",
+      "rhymeEnding": "ec",
+      "pos": "noun"
+    },
+    {
+      "text": "kupiec",
+      "rhymeEnding": "ec",
+      "pos": "noun"
+    },
+    {
+      "text": "wróg",
+      "rhymeEnding": "óg",
+      "pos": "noun"
+    },
+    {
+      "text": "próg",
+      "rhymeEnding": "óg",
+      "pos": "noun"
+    },
+    {
+      "text": "róg",
+      "rhymeEnding": "óg",
+      "pos": "noun"
+    },
+    {
+      "text": "pieróg",
+      "rhymeEnding": "óg",
+      "pos": "noun"
+    },
+    {
+      "text": "stóg",
+      "rhymeEnding": "óg",
+      "pos": "noun"
+    },
+    {
+      "text": "dać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "znać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "grać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "spać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "brać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "prać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "stać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "lać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "siać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "wiać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "rwać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "zdać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "wstać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "przestać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "zostać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "dostać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "sprzedać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "oddać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "podać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "wydać",
+      "rhymeEnding": "ać"
+    },
+    {
+      "text": "latać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "czytać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "pytać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "witać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "chwytać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "zamiatać",
+      "rhymeEnding": "tać"
+    },
+    {
+      "text": "pić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "bić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "wić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "robić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "mówić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "chodzić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "prosić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "nosić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "wozić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "lubić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "dzwonić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "gubić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "trafić",
+      "rhymeEnding": "ić"
+    },
+    {
+      "text": "myć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "kryć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "tyć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "żyć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "szyć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "wyć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "być",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "ukryć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "odkryć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "zabyć",
+      "rhymeEnding": "yć"
+    },
+    {
+      "text": "chcieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "mieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "wiedzieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "siedzieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "leżeć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "boleć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "milczeć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "patrzeć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "umieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "widzieć",
+      "rhymeEnding": "eć"
+    },
+    {
+      "text": "dawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "stawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "poznawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "wstawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "zostawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "dodawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "podawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "wydawać",
+      "rhymeEnding": "wać"
+    },
+    {
+      "text": "połowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "królowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "odnowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "wymowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "namowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "podkowa",
+      "rhymeEnding": "owa"
+    },
+    {
+      "text": "sami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "czasami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "oczami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "słowami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "latami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "nocami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "rękami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "nogami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "drogami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "myślami",
+      "rhymeEnding": "ami"
+    },
+    {
+      "text": "gramy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "mamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "znamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "damy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "czekamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "kochamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "śpiewamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "wygramy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "pamiętamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "szukamy",
+      "rhymeEnding": "amy"
+    },
+    {
+      "text": "masz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "grasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "znasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "dasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "kochasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "czekasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "pytasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "śpiewasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "wracasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "pamiętasz",
+      "rhymeEnding": "asz"
+    },
+    {
+      "text": "słyszysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "patrzysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "marzysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "wierzysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "tworzysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "mierzysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "ważysz",
+      "rhymeEnding": "ysz"
+    },
+    {
+      "text": "robisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "mówisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "chodzisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "prosisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "nosisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "wozisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "lubisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "dzwonisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "gubisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "trafisz",
+      "rhymeEnding": "isz"
+    },
+    {
+      "text": "tego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "jego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "dobrego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "mojego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "twojego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "swojego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "innego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "całego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "złego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "niczego",
+      "rhymeEnding": "ego"
+    },
+    {
+      "text": "temu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "czemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "jemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "dobremu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "mojemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "twojemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "swojemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "innemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "całemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "złemu",
+      "rhymeEnding": "emu"
+    },
+    {
+      "text": "rusz",
+      "rhymeEnding": "usz"
+    },
+    {
+      "text": "kapelusz",
+      "rhymeEnding": "usz"
+    },
+    {
+      "text": "tusz",
+      "rhymeEnding": "usz"
+    }
   ]
 }

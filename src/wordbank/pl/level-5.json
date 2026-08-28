@@ -1,7 +1,92 @@
 {
   "level": 5,
   "language": "pl",
-  "description": "Placeholder for level 5 (target: cumulative 500). To be curated in a later pass — we'll draft ~300 additional words spanning new rhyme families and topical clusters once levels 1–4 are validated in practice.",
+  "description": "Rymy wielosylabowe — pełne zakończenie od ostatniej akcentowanej sylaby.",
   "extendsLevel": 4,
-  "words": []
+  "words": [
+    {
+      "text": "uderzenie",
+      "rhymeEnding": "rzenie"
+    },
+    {
+      "text": "tworzenie",
+      "rhymeEnding": "rzenie"
+    },
+    {
+      "text": "wierzenie",
+      "rhymeEnding": "rzenie"
+    },
+    {
+      "text": "zaburzenie",
+      "rhymeEnding": "rzenie"
+    },
+    {
+      "text": "istnienie",
+      "rhymeEnding": "nienie"
+    },
+    {
+      "text": "ciśnienie",
+      "rhymeEnding": "nienie"
+    },
+    {
+      "text": "wyjaśnienie",
+      "rhymeEnding": "nienie"
+    },
+    {
+      "text": "spełnienie",
+      "rhymeEnding": "nienie"
+    },
+    {
+      "text": "moralność",
+      "rhymeEnding": "alność"
+    },
+    {
+      "text": "realność",
+      "rhymeEnding": "alność"
+    },
+    {
+      "text": "normalność",
+      "rhymeEnding": "alność"
+    },
+    {
+      "text": "legalność",
+      "rhymeEnding": "alność"
+    },
+    {
+      "text": "banalność",
+      "rhymeEnding": "alność"
+    },
+    {
+      "text": "rozpakowanie",
+      "rhymeEnding": "owanie"
+    },
+    {
+      "text": "zaplanowanie",
+      "rhymeEnding": "owanie"
+    },
+    {
+      "text": "zbudowanie",
+      "rhymeEnding": "owanie"
+    },
+    {
+      "text": "pomalowanie",
+      "rhymeEnding": "owanie"
+    },
+    {
+      "text": "biegaczka",
+      "rhymeEnding": "aczka"
+    },
+    {
+      "text": "pływaczka",
+      "rhymeEnding": "aczka"
+    },
+    {
+      "text": "tłumaczka",
+      "rhymeEnding": "aczka"
+    },
+    {
+      "text": "palaczka",
+      "rhymeEnding": "aczka"
+    }
+  ]
 }
