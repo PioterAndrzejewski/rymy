@@ -1,5 +1,4 @@
 export type FamilyConfig = {
-  level: number;
   /** 'random' = drawn when the exercise starts */
   ending: string | 'random';
   /** round length in seconds */
@@ -9,7 +8,6 @@ export type FamilyConfig = {
 };
 
 export const defaultFamilyConfig: FamilyConfig = {
-  level: 2,
   ending: 'random',
   seconds: 30,
   bpm: 0,

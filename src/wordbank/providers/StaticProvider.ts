@@ -27,8 +27,3 @@ export class StaticProvider implements WordProvider {
 function clamp(n: number, lo: number, hi: number) { return Math.max(lo, Math.min(hi, n)); }
 
 export const staticProvider = new StaticProvider();
-
-export function rhymeEndings(level: number): string[] {
-  const words = loadLevel('pl', clamp(level, 1, MAX_LEVEL));
-  return [...new Set(words.map((w) => w.rhymeEnding))].sort();
-}

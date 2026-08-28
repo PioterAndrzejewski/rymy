@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  Badge, Box, Button, Group, SegmentedControl, SimpleGrid, Stack, Text, UnstyledButton, Paper,
+  Badge, Box, Button, Group, SimpleGrid, Stack, Text, UnstyledButton, Paper,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { IconDice5, IconMetronome, IconTargetArrow } from '@tabler/icons-react';
@@ -8,8 +8,7 @@ import { WizardStepper, type StepDef } from '@/components/wizard/WizardStepper';
 import { StepShell, Section, WizardFooter } from '@/components/wizard/StepShell';
 import { ReadyPanel } from '@/components/wizard/ReadyPanel';
 import { ChoiceCard } from '@/components/wizard/ChoiceCard';
-import { MAX_LEVEL, loadLevel } from '@/wordbank/loader';
-import { rhymeEndings } from '@/wordbank/providers/StaticProvider';
+import { RHYME_ENDINGS, rhymeCount, rhymeWords } from '@/wordbank/pl/rhymes';
 import { RhymeRun } from './family/RhymeRun';
 import { DURATIONS, defaultFamilyConfig, fmtDuration, type FamilyConfig } from './family/config';
 
@@ -23,21 +22,18 @@ export function RhymeFamily() {
 
   const patch = (p: Partial<FamilyConfig>) => setConfig((c) => ({ ...c, ...p }));
 
-  const endings = useMemo(() => rhymeEndings(config.level), [config.level]);
-  const endingBank = useMemo(
-    () => (config.ending === 'random'
-      ? []
-      : loadLevel('pl', config.level).filter((w) => w.rhymeEnding === config.ending)),
-    [config.ending, config.level],
+  const endings = RHYME_ENDINGS;
+  const bankSize = config.ending === 'random' ? 0 : rhymeCount(config.ending);
+  const sample = useMemo(
+    () => (config.ending === 'random' ? '' : rhymeWords(config.ending).slice(0, 3).join(', ')),
+    [config.ending],
   );
-  const bankSize = endingBank.length;
-  const sample = endingBank[0]?.text ?? '';
 
   const steps: StepDef[] = [
     {
       id: 'ending',
       label: 'Końcówka',
-      hint: config.ending === 'random' ? `losowa · L${config.level}` : `-${config.ending} · L${config.level}`,
+      hint: config.ending === 'random' ? 'losowa' : `-${config.ending} · ${bankSize} rymów`,
       complete: config.ending === 'random' || endings.includes(config.ending),
     },
     {
@@ -66,18 +62,8 @@ export function RhymeFamily() {
       <WizardStepper steps={steps} current={step} onSelect={setStep} />
 
       {step === 0 && (
-        <StepShell title="Wybierz końcówkę" description="Poziom decyduje o tym, jak duży jest bank podpowiedzi.">
+        <StepShell title="Wybierz końcówkę" description="Każda rodzina ma własny słownik rymów — po rundzie pokażemy, co ci umknęło.">
           <Stack gap="md">
-            <Section title="Poziom">
-              <Box className="rymy-hscroll">
-              <SegmentedControl
-                value={String(config.level)}
-                onChange={(v) => patch({ level: Number(v) })}
-                data={Array.from({ length: MAX_LEVEL }, (_, i) => ({ value: String(i + 1), label: `Level ${i + 1}` }))}
-              />
-              </Box>
-            </Section>
-
             <Section title="Końcówka rymu">
               <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm" mb="md">
                 <ChoiceCard
@@ -105,6 +91,11 @@ export function RhymeFamily() {
                         variant={config.ending === e ? 'filled' : 'light'}
                         color={config.ending === e ? 'brand' : 'gray'}
                         style={{ cursor: 'pointer' }}
+                        rightSection={
+                          <Text span size="10px" c={config.ending === e ? undefined : 'dimmed'}>
+                            {rhymeCount(e)}
+                          </Text>
+                        }
                       >
                         -{e}
                       </Badge>
@@ -114,7 +105,7 @@ export function RhymeFamily() {
               )}
               {config.ending !== 'random' && (
                 <Text size="xs" c="dimmed" mt="sm">
-                  W banku poziomu {config.level} jest {bankSize} słów z tą końcówką{sample ? `, np. ${sample}` : ''}.
+                  Znamy {bankSize} rymów z tą końcówką{sample ? `, np. ${sample}` : ''}.
                 </Text>
               )}
             </Section>
@@ -176,7 +167,6 @@ export function RhymeFamily() {
             items={[
               { label: 'Końcówka', value: config.ending === 'random' ? 'losowa 🎲' : `-${config.ending}` },
               ...(sample ? [{ label: 'Np. rym do', value: sample }] : []),
-              { label: 'Poziom', value: `L${config.level}` },
               { label: 'Czas', value: fmtDuration(config.seconds) },
               { label: 'Metronom', value: config.bpm === 0 ? 'wyłączony' : `${config.bpm} BPM` },
             ]}

@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActionIcon, Badge, Box, Button, Flex, Group, Paper, Progress, SimpleGrid, Stack, Switch, Text, TextInput,
+  ActionIcon, Badge, Box, Button, Collapse, Flex, Group, Paper, Progress, SimpleGrid, Stack, Switch, Text, TextInput,
 } from '@mantine/core';
 import {
-  IconPlayerPauseFilled, IconPlayerPlayFilled, IconRefresh, IconSettings, IconX,
+  IconChevronDown, IconPlayerPauseFilled, IconPlayerPlayFilled, IconRefresh, IconSettings, IconX,
 } from '@tabler/icons-react';
 import { playChime, playClick } from '@/audio/click';
-import { loadLevel } from '@/wordbank/loader';
-import { rhymeEndings } from '@/wordbank/providers/StaticProvider';
+import { RHYME_ENDINGS, rhymeCount, rhymeWords } from '@/wordbank/pl/rhymes';
 import { fmtTime } from '@/lib/format';
 import { fmtDuration, type FamilyConfig } from './config';
 
@@ -15,19 +14,19 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   const pickEnding = useMemo(
     () => () => {
       if (config.ending !== 'random') return config.ending;
-      const pool = rhymeEndings(config.level);
+      const pool = RHYME_ENDINGS;
       return pool.length ? pool[Math.floor(Math.random() * pool.length)] : '';
     },
-    [config.ending, config.level],
+    [config.ending],
   );
 
   // The prompt is a concrete word, not a bare ending — you rhyme to something.
   const pickSeed = useMemo(
     () => (e: string) => {
-      const pool = e ? loadLevel('pl', config.level).filter((w) => w.rhymeEnding === e) : [];
-      return pool.length ? pool[Math.floor(Math.random() * pool.length)].text : '';
+      const pool = e ? rhymeWords(e) : [];
+      return pool.length ? pool[Math.floor(Math.random() * pool.length)] : '';
     },
-    [config.level],
+    [],
   );
 
   const [ending, setEnding] = useState(pickEnding);
@@ -37,6 +36,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   const [shake, setShake] = useState(false);
   const [hints, setHints] = useState(false);
   const [done, setDone] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const totalMs = config.seconds * 1000;
   const [remaining, setRemaining] = useState(totalMs);
@@ -77,19 +77,29 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     return () => window.clearInterval(id);
   }, [config.bpm, running, done]);
 
+  // Full rhyme family, alphabetical — the payoff shown after the round.
   const bank = useMemo(
-    () => (ending ? loadLevel('pl', config.level).filter((w) => w.rhymeEnding === ending && w.text !== seed) : []),
-    [ending, seed, config.level],
+    () => (ending ? rhymeWords(ending).filter((w) => w !== seed) : []),
+    [ending, seed],
   );
 
   // What the bank knows and the user didn't reach — the payoff of the round.
-  const missed = useMemo(() => {
+  const allMissed = useMemo(() => {
     if (!done) return [];
     const used = new Set(entries.map((e) => e.toLowerCase()));
-    const rest = bank.map((w) => w.text).filter((t) => !used.has(t.toLowerCase()));
-    return rest.sort(() => Math.random() - 0.5).slice(0, 10);
+    return bank.filter((w) => !used.has(w.toLowerCase()));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done, bank]);
+
+  const missed = useMemo(
+    () => [...allMissed].sort(() => Math.random() - 0.5).slice(0, 10),
+    [allMissed],
+  );
+
+  const hintSample = useMemo(
+    () => [...bank].sort(() => Math.random() - 0.5).slice(0, 24).sort((a, b) => a.localeCompare(b, 'pl')),
+    [bank],
+  );
 
   function submit() {
     const value = input.trim().toLowerCase();
@@ -108,6 +118,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     setInput('');
     setRemaining(totalMs);
     setDone(false);
+    setShowAll(false);
     setRunning(true);
     const next = newEnding ? pickEnding() : ending;
     if (newEnding) setEnding(next);
@@ -139,13 +150,42 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
             <Paper withBorder p="md" radius="md" maw={720} w="100%" bg="rgba(255,255,255,0.02)">
               <Text size="sm" fw={700} mb={2}>O tym nie pomyślałeś</Text>
               <Text size="xs" c="dimmed" mb="sm">
-                {missed.length} słów z banku (poziom {config.level}) rymujących się z „{seed}", których nie wpisałeś.
+                Kilka słów rymujących się z „{seed}", których nie wpisałeś — znamy ich {allMissed.length}.
               </Text>
               <Group gap={6} justify="center" wrap="wrap">
                 {missed.map((w) => (
                   <Badge key={w} size="lg" variant="light" color="gray">{w}</Badge>
                 ))}
               </Group>
+
+              {allMissed.length > missed.length && (
+                <>
+                  <Collapse in={showAll}>
+                    <Text size="xs" c="dimmed" ta="left" mt="md" mb="xs">
+                      Cała rodzina -{ending} ({rhymeCount(ending)} słów), alfabetycznie:
+                    </Text>
+                    <SimpleGrid cols={{ base: 2, xs: 3, sm: 4, md: 5 }} spacing={6}>
+                      {allMissed.map((w) => (
+                        <Badge key={w} variant="light" color="gray" style={{ maxWidth: '100%' }}>
+                          {w}
+                        </Badge>
+                      ))}
+                    </SimpleGrid>
+                  </Collapse>
+                  <Button
+                    mt="sm" size="xs" variant="subtle" color="gray"
+                    rightSection={
+                      <IconChevronDown
+                        size={14}
+                        style={{ transform: showAll ? 'rotate(180deg)' : undefined, transition: 'transform 180ms ease' }}
+                      />
+                    }
+                    onClick={() => setShowAll((v) => !v)}
+                  >
+                    {showAll ? 'Zwiń' : `Pokaż więcej (${allMissed.length - missed.length})`}
+                  </Button>
+                </>
+              )}
             </Paper>
           )}
 
@@ -263,12 +303,12 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       {hints && (
         <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
           <Text size="sm" fw={600} tt="uppercase" lts={0.6} c="dimmed" mb="sm">
-            Z banku ({bank.length})
+            Z banku — {hintSample.length} z {bank.length}
           </Text>
           <SimpleGrid cols={{ base: 2, xs: 3, sm: 5, md: 8 }} spacing="xs">
-            {bank.map((w) => (
-              <Badge key={w.text} variant="light" color={entries.includes(w.text) ? 'brand' : 'gray'}>
-                {w.text}
+            {hintSample.map((w) => (
+              <Badge key={w} variant="light" color={entries.includes(w) ? 'brand' : 'gray'}>
+                {w}
               </Badge>
             ))}
           </SimpleGrid>

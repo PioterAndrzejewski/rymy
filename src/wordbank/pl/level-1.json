@@ -1,42 +1,697 @@
 {
   "level": 1,
   "language": "pl",
-  "description": "Seed 30 common Polish nouns, 6 rhyme families of 5.",
+  "description": "Proste, popularne słowa o uczuciach — te, które śpiewa się najczęściej. Każde w 2–3 formach (miłość / miłości / miłością).",
   "words": [
-    { "text": "woda",       "rhymeEnding": "oda",  "pos": "noun" },
-    { "text": "moda",       "rhymeEnding": "oda",  "pos": "noun" },
-    { "text": "broda",      "rhymeEnding": "oda",  "pos": "noun" },
-    { "text": "szkoda",     "rhymeEnding": "oda",  "pos": "noun" },
-    { "text": "pogoda",     "rhymeEnding": "oda",  "pos": "noun" },
-
-    { "text": "miłość",     "rhymeEnding": "ość",  "pos": "noun" },
-    { "text": "radość",     "rhymeEnding": "ość",  "pos": "noun" },
-    { "text": "złość",      "rhymeEnding": "ość",  "pos": "noun" },
-    { "text": "młodość",    "rhymeEnding": "ość",  "pos": "noun" },
-    { "text": "wolność",    "rhymeEnding": "ość",  "pos": "noun" },
-
-    { "text": "mieszkanie", "rhymeEnding": "anie", "pos": "noun" },
-    { "text": "spotkanie",  "rhymeEnding": "anie", "pos": "noun" },
-    { "text": "kochanie",   "rhymeEnding": "anie", "pos": "noun" },
-    { "text": "śpiewanie",  "rhymeEnding": "anie", "pos": "noun" },
-    { "text": "śniadanie",  "rhymeEnding": "anie", "pos": "noun" },
-
-    { "text": "domek",      "rhymeEnding": "ek",   "pos": "noun" },
-    { "text": "kotek",      "rhymeEnding": "ek",   "pos": "noun" },
-    { "text": "piesek",     "rhymeEnding": "ek",   "pos": "noun" },
-    { "text": "kwiatek",    "rhymeEnding": "ek",   "pos": "noun" },
-    { "text": "stołek",     "rhymeEnding": "ek",   "pos": "noun" },
-
-    { "text": "lekarz",     "rhymeEnding": "arz",  "pos": "noun" },
-    { "text": "piekarz",    "rhymeEnding": "arz",  "pos": "noun" },
-    { "text": "malarz",     "rhymeEnding": "arz",  "pos": "noun" },
-    { "text": "pisarz",     "rhymeEnding": "arz",  "pos": "noun" },
-    { "text": "murarz",     "rhymeEnding": "arz",  "pos": "noun" },
-
-    { "text": "robota",     "rhymeEnding": "ota",  "pos": "noun" },
-    { "text": "sobota",     "rhymeEnding": "ota",  "pos": "noun" },
-    { "text": "ochota",     "rhymeEnding": "ota",  "pos": "noun" },
-    { "text": "tęsknota",   "rhymeEnding": "ota",  "pos": "noun" },
-    { "text": "prostota",   "rhymeEnding": "ota",  "pos": "noun" }
+    {
+      "text": "miłość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "miłości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "miłością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "złość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "złości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "złością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "radość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "radości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "radością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "zazdrość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "zazdrości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "zazdrością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "czułość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "czułości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "wolność",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "wolności",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "wolnością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "samotność",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "samotności",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "samotnością",
+      "rhymeEnding": "ością",
+      "pos": "noun"
+    },
+    {
+      "text": "wierność",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "wierności",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "młodość",
+      "rhymeEnding": "ość",
+      "pos": "noun"
+    },
+    {
+      "text": "młodości",
+      "rhymeEnding": "ości",
+      "pos": "noun"
+    },
+    {
+      "text": "tęsknota",
+      "rhymeEnding": "ota",
+      "pos": "noun"
+    },
+    {
+      "text": "tęsknoty",
+      "rhymeEnding": "oty",
+      "pos": "noun"
+    },
+    {
+      "text": "tęsknotą",
+      "rhymeEnding": "otą",
+      "pos": "noun"
+    },
+    {
+      "text": "utrata",
+      "rhymeEnding": "ata",
+      "pos": "noun"
+    },
+    {
+      "text": "utraty",
+      "rhymeEnding": "aty",
+      "pos": "noun"
+    },
+    {
+      "text": "utratą",
+      "rhymeEnding": "atą",
+      "pos": "noun"
+    },
+    {
+      "text": "zdrada",
+      "rhymeEnding": "ada",
+      "pos": "noun"
+    },
+    {
+      "text": "zdrady",
+      "rhymeEnding": "ady",
+      "pos": "noun"
+    },
+    {
+      "text": "zdradą",
+      "rhymeEnding": "adą",
+      "pos": "noun"
+    },
+    {
+      "text": "nadzieja",
+      "rhymeEnding": "eja",
+      "pos": "noun"
+    },
+    {
+      "text": "nadziei",
+      "rhymeEnding": "ei",
+      "pos": "noun"
+    },
+    {
+      "text": "nadzieję",
+      "rhymeEnding": "eję",
+      "pos": "noun"
+    },
+    {
+      "text": "wiara",
+      "rhymeEnding": "ara",
+      "pos": "noun"
+    },
+    {
+      "text": "wiary",
+      "rhymeEnding": "ary",
+      "pos": "noun"
+    },
+    {
+      "text": "wiarą",
+      "rhymeEnding": "arą",
+      "pos": "noun"
+    },
+    {
+      "text": "prawda",
+      "rhymeEnding": "awda",
+      "pos": "noun"
+    },
+    {
+      "text": "prawdy",
+      "rhymeEnding": "awdy",
+      "pos": "noun"
+    },
+    {
+      "text": "prawdą",
+      "rhymeEnding": "awdą",
+      "pos": "noun"
+    },
+    {
+      "text": "dusza",
+      "rhymeEnding": "usza",
+      "pos": "noun"
+    },
+    {
+      "text": "duszy",
+      "rhymeEnding": "uszy",
+      "pos": "noun"
+    },
+    {
+      "text": "duszą",
+      "rhymeEnding": "uszą",
+      "pos": "noun"
+    },
+    {
+      "text": "cisza",
+      "rhymeEnding": "isza",
+      "pos": "noun"
+    },
+    {
+      "text": "ciszy",
+      "rhymeEnding": "iszy",
+      "pos": "noun"
+    },
+    {
+      "text": "ciszą",
+      "rhymeEnding": "iszą",
+      "pos": "noun"
+    },
+    {
+      "text": "duma",
+      "rhymeEnding": "uma",
+      "pos": "noun"
+    },
+    {
+      "text": "dumy",
+      "rhymeEnding": "umy",
+      "pos": "noun"
+    },
+    {
+      "text": "dumą",
+      "rhymeEnding": "umą",
+      "pos": "noun"
+    },
+    {
+      "text": "ulga",
+      "rhymeEnding": "lga",
+      "pos": "noun"
+    },
+    {
+      "text": "ulgi",
+      "rhymeEnding": "lgi",
+      "pos": "noun"
+    },
+    {
+      "text": "ulgą",
+      "rhymeEnding": "lgą",
+      "pos": "noun"
+    },
+    {
+      "text": "serce",
+      "rhymeEnding": "erce",
+      "pos": "noun"
+    },
+    {
+      "text": "serca",
+      "rhymeEnding": "erca",
+      "pos": "noun"
+    },
+    {
+      "text": "sercem",
+      "rhymeEnding": "ercem",
+      "pos": "noun"
+    },
+    {
+      "text": "szczęście",
+      "rhymeEnding": "ście",
+      "pos": "noun"
+    },
+    {
+      "text": "szczęścia",
+      "rhymeEnding": "ścia",
+      "pos": "noun"
+    },
+    {
+      "text": "szczęściem",
+      "rhymeEnding": "ściem",
+      "pos": "noun"
+    },
+    {
+      "text": "uczucie",
+      "rhymeEnding": "cie",
+      "pos": "noun"
+    },
+    {
+      "text": "uczucia",
+      "rhymeEnding": "cia",
+      "pos": "noun"
+    },
+    {
+      "text": "uczuciem",
+      "rhymeEnding": "ciem",
+      "pos": "noun"
+    },
+    {
+      "text": "kochanie",
+      "rhymeEnding": "anie",
+      "pos": "noun"
+    },
+    {
+      "text": "kochania",
+      "rhymeEnding": "ania",
+      "pos": "noun"
+    },
+    {
+      "text": "kochaniem",
+      "rhymeEnding": "aniem",
+      "pos": "noun"
+    },
+    {
+      "text": "rozstanie",
+      "rhymeEnding": "anie",
+      "pos": "noun"
+    },
+    {
+      "text": "rozstania",
+      "rhymeEnding": "ania",
+      "pos": "noun"
+    },
+    {
+      "text": "spotkanie",
+      "rhymeEnding": "anie",
+      "pos": "noun"
+    },
+    {
+      "text": "spotkania",
+      "rhymeEnding": "ania",
+      "pos": "noun"
+    },
+    {
+      "text": "marzenie",
+      "rhymeEnding": "enie",
+      "pos": "noun"
+    },
+    {
+      "text": "marzenia",
+      "rhymeEnding": "enia",
+      "pos": "noun"
+    },
+    {
+      "text": "marzeniem",
+      "rhymeEnding": "eniem",
+      "pos": "noun"
+    },
+    {
+      "text": "wspomnienie",
+      "rhymeEnding": "enie",
+      "pos": "noun"
+    },
+    {
+      "text": "wspomnienia",
+      "rhymeEnding": "enia",
+      "pos": "noun"
+    },
+    {
+      "text": "pragnienie",
+      "rhymeEnding": "enie",
+      "pos": "noun"
+    },
+    {
+      "text": "pragnienia",
+      "rhymeEnding": "enia",
+      "pos": "noun"
+    },
+    {
+      "text": "wzruszenie",
+      "rhymeEnding": "enie",
+      "pos": "noun"
+    },
+    {
+      "text": "wzruszenia",
+      "rhymeEnding": "enia",
+      "pos": "noun"
+    },
+    {
+      "text": "smutek",
+      "rhymeEnding": "ek",
+      "pos": "noun"
+    },
+    {
+      "text": "smutku",
+      "rhymeEnding": "ku",
+      "pos": "noun"
+    },
+    {
+      "text": "smutkiem",
+      "rhymeEnding": "kiem",
+      "pos": "noun"
+    },
+    {
+      "text": "pocałunek",
+      "rhymeEnding": "ek",
+      "pos": "noun"
+    },
+    {
+      "text": "pocałunku",
+      "rhymeEnding": "ku",
+      "pos": "noun"
+    },
+    {
+      "text": "pocałunkiem",
+      "rhymeEnding": "kiem",
+      "pos": "noun"
+    },
+    {
+      "text": "strach",
+      "rhymeEnding": "ach",
+      "pos": "noun"
+    },
+    {
+      "text": "strachu",
+      "rhymeEnding": "chu",
+      "pos": "noun"
+    },
+    {
+      "text": "strachem",
+      "rhymeEnding": "chem",
+      "pos": "noun"
+    },
+    {
+      "text": "żal",
+      "rhymeEnding": "al",
+      "pos": "noun"
+    },
+    {
+      "text": "żalu",
+      "rhymeEnding": "alu",
+      "pos": "noun"
+    },
+    {
+      "text": "żalem",
+      "rhymeEnding": "alem",
+      "pos": "noun"
+    },
+    {
+      "text": "ból",
+      "rhymeEnding": "ól",
+      "pos": "noun"
+    },
+    {
+      "text": "bólu",
+      "rhymeEnding": "ólu",
+      "pos": "noun"
+    },
+    {
+      "text": "bólem",
+      "rhymeEnding": "ólem",
+      "pos": "noun"
+    },
+    {
+      "text": "gniew",
+      "rhymeEnding": "ew",
+      "pos": "noun"
+    },
+    {
+      "text": "gniewu",
+      "rhymeEnding": "ewu",
+      "pos": "noun"
+    },
+    {
+      "text": "gniewem",
+      "rhymeEnding": "ewem",
+      "pos": "noun"
+    },
+    {
+      "text": "spokój",
+      "rhymeEnding": "ój",
+      "pos": "noun"
+    },
+    {
+      "text": "spokoju",
+      "rhymeEnding": "oju",
+      "pos": "noun"
+    },
+    {
+      "text": "spokojem",
+      "rhymeEnding": "ojem",
+      "pos": "noun"
+    },
+    {
+      "text": "wstyd",
+      "rhymeEnding": "yd",
+      "pos": "noun"
+    },
+    {
+      "text": "wstydu",
+      "rhymeEnding": "ydu",
+      "pos": "noun"
+    },
+    {
+      "text": "wstydem",
+      "rhymeEnding": "ydem",
+      "pos": "noun"
+    },
+    {
+      "text": "płacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "płaczu",
+      "rhymeEnding": "aczu",
+      "pos": "noun"
+    },
+    {
+      "text": "płaczem",
+      "rhymeEnding": "aczem",
+      "pos": "noun"
+    },
+    {
+      "text": "śmiech",
+      "rhymeEnding": "ech",
+      "pos": "noun"
+    },
+    {
+      "text": "śmiechu",
+      "rhymeEnding": "echu",
+      "pos": "noun"
+    },
+    {
+      "text": "śmiechem",
+      "rhymeEnding": "echem",
+      "pos": "noun"
+    },
+    {
+      "text": "krzyk",
+      "rhymeEnding": "yk",
+      "pos": "noun"
+    },
+    {
+      "text": "krzyku",
+      "rhymeEnding": "yku",
+      "pos": "noun"
+    },
+    {
+      "text": "krzykiem",
+      "rhymeEnding": "kiem",
+      "pos": "noun"
+    },
+    {
+      "text": "noc",
+      "rhymeEnding": "oc",
+      "pos": "noun"
+    },
+    {
+      "text": "nocy",
+      "rhymeEnding": "ocy",
+      "pos": "noun"
+    },
+    {
+      "text": "nocą",
+      "rhymeEnding": "ocą",
+      "pos": "noun"
+    },
+    {
+      "text": "sen",
+      "rhymeEnding": "en",
+      "pos": "noun"
+    },
+    {
+      "text": "snu",
+      "rhymeEnding": "nu",
+      "pos": "noun"
+    },
+    {
+      "text": "snem",
+      "rhymeEnding": "nem",
+      "pos": "noun"
+    },
+    {
+      "text": "łzy",
+      "rhymeEnding": "zy",
+      "pos": "noun"
+    },
+    {
+      "text": "łez",
+      "rhymeEnding": "ez",
+      "pos": "noun"
+    },
+    {
+      "text": "łzami",
+      "rhymeEnding": "ami",
+      "pos": "noun"
+    },
+    {
+      "text": "ogień",
+      "rhymeEnding": "eń",
+      "pos": "noun"
+    },
+    {
+      "text": "ognia",
+      "rhymeEnding": "nia",
+      "pos": "noun"
+    },
+    {
+      "text": "ogniem",
+      "rhymeEnding": "niem",
+      "pos": "noun"
+    },
+    {
+      "text": "pamięć",
+      "rhymeEnding": "ęć",
+      "pos": "noun"
+    },
+    {
+      "text": "pamięci",
+      "rhymeEnding": "ęci",
+      "pos": "noun"
+    },
+    {
+      "text": "rozpacz",
+      "rhymeEnding": "acz",
+      "pos": "noun"
+    },
+    {
+      "text": "rozpaczy",
+      "rhymeEnding": "aczy",
+      "pos": "noun"
+    },
+    {
+      "text": "dotyk",
+      "rhymeEnding": "yk",
+      "pos": "noun"
+    },
+    {
+      "text": "dotyku",
+      "rhymeEnding": "yku",
+      "pos": "noun"
+    },
+    {
+      "text": "dotykiem",
+      "rhymeEnding": "kiem",
+      "pos": "noun"
+    },
+    {
+      "text": "szept",
+      "rhymeEnding": "ept",
+      "pos": "noun"
+    },
+    {
+      "text": "szeptu",
+      "rhymeEnding": "ptu",
+      "pos": "noun"
+    },
+    {
+      "text": "szeptem",
+      "rhymeEnding": "ptem",
+      "pos": "noun"
+    },
+    {
+      "text": "obietnica",
+      "rhymeEnding": "ica",
+      "pos": "noun"
+    },
+    {
+      "text": "obietnicy",
+      "rhymeEnding": "icy",
+      "pos": "noun"
+    },
+    {
+      "text": "przyjaźń",
+      "rhymeEnding": "aźń",
+      "pos": "noun"
+    },
+    {
+      "text": "przyjaźni",
+      "rhymeEnding": "aźni",
+      "pos": "noun"
+    }
   ]
 }
