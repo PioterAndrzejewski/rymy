@@ -31,6 +31,69 @@ export type RhymeEnding = string;
 export const RHYME_ENDINGS: RhymeEnding[] = Object.keys(RHYME_WORDS)
   .sort((a, b) => a.localeCompare(b, 'pl'));
 
+/**
+ * Słowa podstawowe — słowa powiązane z miłością i emocjami, których używamy
+ * jako seed w trybie „Słowa podstawowe". Zamiast losowych słów z ogólnej puli
+ * ćwiczysz rymy do słów, które naprawdę pojawiają się w piosenkach.
+ */
+export const BASIC_SONG_WORDS: ReadonlyArray<{ word: string; ending: string }> = [
+  // -ość: uczucia i stany
+  { word: 'miłość',      ending: 'ość' },
+  { word: 'złość',       ending: 'ość' },
+  { word: 'czułość',     ending: 'ość' },
+  { word: 'radość',      ending: 'ość' },
+  { word: 'samotność',   ending: 'ość' },
+  { word: 'bliskość',    ending: 'ość' },
+  { word: 'wolność',     ending: 'ość' },
+  { word: 'wierność',    ending: 'ość' },
+  { word: 'namiętność',  ending: 'ość' },
+  { word: 'zazdrość',    ending: 'ość' },
+  { word: 'wrażliwość',  ending: 'ość' },
+  { word: 'wieczność',   ending: 'ość' },
+  // -anie: działania i stany emocjonalne
+  { word: 'kochanie',    ending: 'anie' },
+  { word: 'wołanie',     ending: 'anie' },
+  { word: 'śpiewanie',   ending: 'anie' },
+  { word: 'płakanie',    ending: 'anie' },
+  { word: 'czekanie',    ending: 'anie' },
+  { word: 'całowanie',   ending: 'anie' },
+  { word: 'szeptanie',   ending: 'anie' },
+  { word: 'wspominanie', ending: 'anie' },
+  { word: 'żegnanie',    ending: 'anie' },
+  { word: 'trzymanie',   ending: 'anie' },
+  { word: 'wzdychanie',  ending: 'anie' },
+  { word: 'zakochanie',  ending: 'anie' },
+  // -enie: uczucia i doświadczenia
+  { word: 'pragnienie',  ending: 'enie' },
+  { word: 'marzenie',    ending: 'enie' },
+  { word: 'westchnienie', ending: 'enie' },
+  { word: 'wspomnienie', ending: 'enie' },
+  { word: 'spełnienie',  ending: 'enie' },
+  { word: 'wzruszenie',  ending: 'enie' },
+  { word: 'milczenie',   ending: 'enie' },
+  { word: 'uniesienie',  ending: 'enie' },
+  { word: 'cierpienie',  ending: 'enie' },
+  { word: 'zauroczenie', ending: 'enie' },
+  { word: 'przebudzenie', ending: 'enie' },
+  // -ać: bezokoliczniki emocji
+  { word: 'kochać',      ending: 'ać' },
+  { word: 'śpiewać',     ending: 'ać' },
+  { word: 'płakać',      ending: 'ać' },
+  { word: 'czekać',      ending: 'ać' },
+  { word: 'szeptać',     ending: 'ać' },
+  { word: 'wracać',      ending: 'ać' },
+  { word: 'żegnać',      ending: 'ać' },
+  { word: 'wołać',       ending: 'ać' },
+  // -ami: obrazy z piosenek
+  { word: 'łzami',       ending: 'ami' },
+  { word: 'słowami',     ending: 'ami' },
+  { word: 'ustami',      ending: 'ami' },
+  { word: 'oczami',      ending: 'ami' },
+  { word: 'nocami',      ending: 'ami' },
+  { word: 'ramionami',   ending: 'ami' },
+  { word: 'sercami',     ending: 'ami' },
+];
+
 const cache = new Map<string, string[]>();
 
 /** Every rhyme we know for an ending, alphabetically (Polish collation). */

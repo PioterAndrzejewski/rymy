@@ -204,6 +204,7 @@ Wejście „Moje skojarzenia" obok kreatora (analogicznie do „Mój bank rymów
 - `src/modes/chain/ChainStrip.tsx` — taśma łańcucha + znacznik rekordu
 - `src/modes/chain/LinkInput.tsx` — dwa sloty, timer, mikrofon
 - `src/modes/chain/ChainRun.tsx` — fazy: intro → play → review → summary
+- `src/modes/chain/Review.tsx` — szczery przegląd (osobny ekran fazy `review`)
 - `src/modes/chain/Summary.tsx` — droga, paski, tabela ogniw
 - `src/modes/chain/PairsPanel.tsx` — „Moje skojarzenia"
 - `src/modes/ChainMode.tsx` — kreator + router trybu
@@ -212,14 +213,18 @@ Wejście „Moje skojarzenia" obok kreatora (analogicznie do „Mój bank rymów
 ## Kroki wdrożenia
 
 - [x] 1. Plan (ten plik)
-- [ ] 2. `wordbank/pl/phonetics.ts` + testowe przypadki na tanich rymach
-- [ ] 3. `storage/chainProgress.ts` — model i zapis
-- [ ] 4. `chain/config.ts` + `chain/words.ts` + `chain/score.ts`
-- [ ] 5. `chain/LinkInput.tsx` + `chain/ChainStrip.tsx`
-- [ ] 6. `chain/ChainRun.tsx` — cztery fazy rundy
-- [ ] 7. `chain/Summary.tsx` + `chain/PairsPanel.tsx`
-- [ ] 8. `modes/ChainMode.tsx` — kreator
-- [ ] 9. Wpięcie w Home (druga kafelka) + Practice, typecheck, build
+- [x] 2. `wordbank/pl/phonetics.ts` + testowe przypadki na tanich rymach
+- [x] 3. `storage/chainProgress.ts` — model i zapis
+- [x] 4. `chain/config.ts` + `chain/words.ts` + `chain/score.ts`
+- [x] 5. `chain/LinkInput.tsx` + `chain/ChainStrip.tsx`
+- [x] 6. `chain/ChainRun.tsx` — cztery fazy rundy
+- [x] 7. `chain/Summary.tsx` + `chain/PairsPanel.tsx`
+- [x] 8. `modes/ChainMode.tsx` — kreator
+- [x] 9. Wpięcie w Home (druga kafelka) + Practice, typecheck, build
+
+Poza planem, przy okazji: `stem` i etykiety kategorii wyszły ze `story-topics.ts`
+na zewnątrz (`CATEGORY_LABELS`, `categoryLabel`), bo potrzebują ich teraz trzy
+tryby, a nie jeden.
 
 ## Później (nie w v1)
 

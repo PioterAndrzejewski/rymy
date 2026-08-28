@@ -1,5 +1,5 @@
 import { Box, Text } from '@mantine/core';
-import { inkOn, wallBackground, type Room } from './rooms';
+import { inkOn, wallBackground, wallBackgroundWithImage, type Room } from './rooms';
 import { RoomFurniture } from './furniture';
 
 /**
@@ -8,8 +8,8 @@ import { RoomFurniture } from './furniture';
  * i w podsumowaniu, gdzie pokoje trzeba pokazać obok siebie.
  */
 export function RoomCard({
-  room, index, word, height = 200, muted = false,
-}: { room: Room; index: number; word?: string; height?: number; muted?: boolean }) {
+  room, index, word, height = 200, muted = false, imageUrl,
+}: { room: Room; index: number; word?: string; height?: number; muted?: boolean; imageUrl?: string }) {
   const ink = inkOn(room.wall);
   return (
     <Box
@@ -17,7 +17,7 @@ export function RoomCard({
         height,
         borderRadius: 12,
         overflow: 'hidden',
-        background: wallBackground(room),
+        background: imageUrl ? wallBackgroundWithImage(room, imageUrl) : wallBackground(room),
         border: `3px solid ${room.accent}`,
         display: 'grid',
         placeItems: 'center',

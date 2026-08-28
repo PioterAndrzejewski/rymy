@@ -8,8 +8,9 @@ export type FamilyConfig = {
   /**
    * 'random' = drawn when the exercise starts (and again for every new word)
    * 'plan'   = drawn by the programme — your weakest family (see review.ts)
+   * 'basic'  = seed drawn from BASIC_SONG_WORDS — emotional words from songs
    */
-  ending: string | 'random' | 'plan';
+  ending: string | 'random' | 'plan' | 'basic';
   /** round length in seconds */
   seconds: number;
   /** 0 = metronome off */
@@ -24,8 +25,8 @@ export type FamilyConfig = {
 };
 
 /** Końcówka nie jest wybrana ręcznie — dobiera ją losowanie albo program. */
-export function isAutoEnding(e: FamilyConfig['ending']): e is 'random' | 'plan' {
-  return e === 'random' || e === 'plan';
+export function isAutoEnding(e: FamilyConfig['ending']): e is 'random' | 'plan' | 'basic' {
+  return e === 'random' || e === 'plan' || e === 'basic';
 }
 
 export const defaultFamilyConfig: FamilyConfig = {
@@ -40,7 +41,7 @@ export const defaultFamilyConfig: FamilyConfig = {
 
 export const DURATIONS = [10, 20, 30, 60, 120];
 export const QUOTA_CHOICES = [1, 2, 3, 5];
-export const WORD_SECONDS_CHOICES = [15, 30, 45];
+export const WORD_SECONDS_CHOICES = [2, 3, 5, 10];
 
 export function fmtDuration(seconds: number): string {
   return seconds >= 60 && seconds % 60 === 0

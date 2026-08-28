@@ -6,10 +6,12 @@ import {
   IconArrowNarrowRight, IconBolt, IconCheck, IconRefresh, IconSettings, IconTrophy, IconX,
 } from '@tabler/icons-react';
 import { fmtTime } from '@/lib/format';
+import { QUALITY_LABEL, type RhymeQuality } from '@/wordbank/pl/phonetics';
 import {
   levelReport, scoreSlots, type PalaceProgress,
 } from '@/storage/palaceProgress';
 import { roomsFor } from './rooms';
+import { FloorPlan } from './FloorPlan';
 import { levelDef } from './config';
 
 type Props = {
@@ -18,8 +20,9 @@ type Props = {
   answers: string[];
   recallMs: number;
   progress: PalaceProgress | null;
-  distractionsSolved: number;
-  distractionsTotal: number;
+  /** rym dorzucony przy odtwarzaniu, do słowa, które podałeś ('' = bez rymu) */
+  rhymes: string[];
+  rhymeQuality: RhymeQuality[];
   onRepeatSame: () => void;
   onNewSet: () => void;
   onExit: () => void;
@@ -31,7 +34,7 @@ type Props = {
  * co było źle.
  */
 export function PalaceSummary({
-  level, words, answers, recallMs, progress, distractionsSolved, distractionsTotal,
+  level, words, answers, recallMs, progress, rhymes, rhymeQuality,
   onRepeatSame, onNewSet, onExit,
 }: Props) {
   const slots = useMemo(() => scoreSlots(words, answers), [words, answers]);
@@ -74,9 +77,9 @@ export function PalaceSummary({
             <Badge size="lg" variant="light" color="gray">
               {fmtTime(recallMs)} · {(msPerWord / 1000).toFixed(1)} s na słowo
             </Badge>
-            {distractionsTotal > 0 && (
+            {rhymes.length > 0 && (
               <Badge size="lg" variant="light" color="gray">
-                rymy: {distractionsSolved}/{distractionsTotal}
+                rymy: {rhymes.filter(Boolean).length}/{words.length}
               </Badge>
             )}
             {isRecord && (
@@ -106,6 +109,17 @@ export function PalaceSummary({
       </Paper>
 
       <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
+        <Text size="sm" fw={600} tt="uppercase" lts={0.6} c="dimmed" mb="sm">Twoje mieszkanie</Text>
+        {/* Ten sam rzut co w spacerze — widać, w której części trasy się sypie. */}
+        <FloorPlan
+          rooms={rooms}
+          labels={(i) => slots[i]?.expected}
+          status={(i) => (slots[i]?.exact ? 'ok' : 'bad')}
+          height={260}
+        />
+      </Paper>
+
+      <Paper withBorder p={{ base: 'sm', sm: 'md' }} radius="md">
         <Text size="sm" fw={600} tt="uppercase" lts={0.6} c="dimmed" mb="sm">Pokój po pokoju</Text>
         <Stack gap={6}>
           {slots.map((s, i) => (
@@ -127,9 +141,18 @@ export function PalaceSummary({
             >
               <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
                 <Badge size="sm" variant="light" color="gray" style={{ flexShrink: 0 }}>{i + 1}</Badge>
-                <Text size="sm" c="dimmed" lineClamp={1} style={{ minWidth: 0 }}>
-                  {rooms[i]?.prop} {rooms[i]?.name}
-                </Text>
+                <Box style={{ minWidth: 0 }}>
+                  <Text size="sm" c="dimmed" lineClamp={1}>
+                    {rooms[i]?.prop} {rooms[i]?.name}
+                  </Text>
+                  {rhymes[i] && (
+                    // Rym zrobiony do słowa, które wyjąłeś z tego pokoju —
+                    // dowód, że słowo wróciło na tyle, żeby dało się z nim grać.
+                    <Text size="10px" c="dimmed" lineClamp={1}>
+                      twój rym: {rhymes[i]} · {QUALITY_LABEL[rhymeQuality[i] ?? 0]}
+                    </Text>
+                  )}
+                </Box>
               </Group>
               <Group gap="xs" wrap="nowrap" style={{ minWidth: 0 }}>
                 {!s.exact && (

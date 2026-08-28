@@ -1,20 +1,27 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
-  Paper, Stack, SimpleGrid, Title, FileInput, TextInput, NumberInput, Button,
-} from '@mantine/core';
-import { IconUpload, IconPlus } from '@tabler/icons-react';
-import { addUserTrack } from '@/storage/userTracks';
-import { useLibrary } from '@/state/library';
-import { notifications } from '@mantine/notifications';
+  Paper,
+  Stack,
+  SimpleGrid,
+  Title,
+  FileInput,
+  TextInput,
+  NumberInput,
+  Button,
+} from "@mantine/core";
+import { IconUpload, IconPlus } from "@tabler/icons-react";
+import { addUserTrack } from "@/storage/userTracks";
+import { useLibrary } from "@/state/library";
+import { notifications } from "@mantine/notifications";
 
 export function AddTrackForm() {
   const refresh = useLibrary((s) => s.refresh);
   const [file, setFile] = useState<File | null>(null);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [bpm, setBpm] = useState(90);
   const [offset, setOffset] = useState(0);
   const [introBars, setIntroBars] = useState(0);
-  const [style, setStyle] = useState('');
+  const [style, setStyle] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function submit() {
@@ -24,31 +31,47 @@ export function AddTrackForm() {
       const id = `user-${Date.now()}`;
       await addUserTrack({
         id,
-        name: name || file.name.replace(/\.[^.]+$/, ''),
+        name: name || file.name.replace(/\.[^.]+$/, ""),
         bpm,
         timeSignature: [4, 4],
         downbeatOffsetMs: offset,
         introBars,
         style: style || undefined,
         blob: file,
-        mime: file.type || 'audio/mpeg',
+        mime: file.type || "audio/mpeg",
         createdAt: Date.now(),
       });
       await refresh();
-      notifications.show({ color: 'brand', title: 'Dodano podkład', message: name || file.name });
-      setFile(null); setName(''); setStyle(''); setOffset(0); setIntroBars(0);
+      notifications.show({
+        color: "brand",
+        title: "Dodano podkład",
+        message: name || file.name,
+      });
+      setFile(null);
+      setName("");
+      setStyle("");
+      setOffset(0);
+      setIntroBars(0);
     } catch (e) {
-      notifications.show({ color: 'red', title: 'Błąd', message: (e as Error).message });
+      notifications.show({
+        color: "red",
+        title: "Błąd",
+        message: (e as Error).message,
+      });
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <Paper withBorder p={{ base: 'sm', sm: 'md' }}>
+    <Paper withBorder p={{ base: "sm", sm: "md" }}>
       <Stack gap="md">
-        <Title order={5}>Dodaj podkład (do IndexedDB)</Title>
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm" verticalSpacing="sm">
+        <Title order={5}>Dodaj podkład</Title>
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, md: 3 }}
+          spacing="sm"
+          verticalSpacing="sm"
+        >
           <FileInput
             label="Plik audio"
             accept="audio/*"
@@ -66,12 +89,20 @@ export function AddTrackForm() {
           <NumberInput
             label="BPM"
             description="Można ułamkowo, np. 69.7"
-            value={bpm} min={30} max={300} step={0.1} decimalScale={1}
+            value={bpm}
+            min={30}
+            max={300}
+            step={0.1}
+            decimalScale={1}
             hideControls
             onChange={(v) => setBpm(Number(v))}
           />
         </SimpleGrid>
-        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="sm" verticalSpacing="sm">
+        <SimpleGrid
+          cols={{ base: 1, sm: 2, md: 3 }}
+          spacing="sm"
+          verticalSpacing="sm"
+        >
           <NumberInput
             label="Offset downbeat (ms)"
             hideControls
@@ -81,7 +112,10 @@ export function AddTrackForm() {
           <NumberInput
             label="Takty intro"
             description="ile taktów na starcie bez słów"
-            value={introBars} min={0} max={64} hideControls
+            value={introBars}
+            min={0}
+            max={64}
+            hideControls
             onChange={(v) => setIntroBars(Number(v))}
           />
           <TextInput

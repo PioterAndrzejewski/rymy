@@ -134,7 +134,7 @@ const STOPWORDS = new Set([
 ]);
 
 /** Crude Polish stem: enough to match "pociągu" with "pociąg". */
-function stem(word: string): string {
+export function stem(word: string): string {
   return word.toLowerCase().replace(/[^a-ząćęłńóśźż]/g, '').slice(0, 5);
 }
 
@@ -195,7 +195,28 @@ export function randomTopics(count: number): StoryTopic[] {
   return out;
 }
 
-/** Wszystkie słowa z jednej kategorii — używa ich też tryb „Pałac mentalny". */
+/** Nazwy kategorii do pokazania — te same tematy widzi Historia, Pałac i Łańcuch. */
+export const CATEGORY_LABELS: Record<CategoryId, string> = {
+  dom: 'Dom', kuchnia: 'Kuchnia', miasto: 'Miasto', podroze: 'Podróże', praca: 'Praca',
+  szkola: 'Szkoła', milosc: 'Miłość', rodzina: 'Rodzina', przyjazn: 'Przyjaźń',
+  smutek: 'Smutek', radosc: 'Radość', zlosc: 'Złość', strach: 'Strach', sport: 'Sport',
+  muzyka: 'Muzyka', film: 'Film', internet: 'Internet', technologia: 'Technologia',
+  pieniadze: 'Pieniądze', zakupy: 'Zakupy', las: 'Las', morze: 'Morze', gory: 'Góry',
+  pogoda: 'Pogoda', zima: 'Zima', lato: 'Lato', noc: 'Noc', poranek: 'Poranek',
+  zdrowie: 'Zdrowie', szpital: 'Szpital', samochody: 'Samochody', pociagi: 'Pociągi',
+  lotnisko: 'Lotnisko', wies: 'Wieś', zwierzeta: 'Zwierzęta', dziecinstwo: 'Dzieciństwo',
+  starosc: 'Starość', smierc: 'Śmierć', wiara: 'Wiara', polityka: 'Polityka',
+  policja: 'Policja', wojna: 'Wojna', kosmos: 'Kosmos', magia: 'Magia', sztuka: 'Sztuka',
+  impreza: 'Impreza', nalogi: 'Nałogi', marzenia: 'Marzenia', porazka: 'Porażka',
+  samotnosc: 'Samotność',
+};
+
+/** Etykieta kategorii; nieznane id zwracamy bez zmian. */
+export function categoryLabel(id: string): string {
+  return CATEGORY_LABELS[id as CategoryId] ?? id;
+}
+
+/** Wszystkie słowa z jednej kategorii — używają ich też tryby „Pałac" i „Łańcuch". */
 export function categoryWords(id: CategoryId): string[] {
   return WORDS[id];
 }

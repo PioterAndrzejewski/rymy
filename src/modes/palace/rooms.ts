@@ -35,22 +35,22 @@ export type Room = {
  * wchodzisz drzwiami i idziesz przed siebie.
  */
 export const ROOMS: Room[] = [
-  { name: 'Przedpokój',    wall: '#f2f0ea', floor: '#3c3733', accent: '#c9a227', height: 210, width: 260, depth: 300, pattern: 'plain',   prop: '🔑' },
-  { name: 'Kuchnia',       wall: '#dfe9e3', floor: '#2f3a35', accent: '#4aa06a', height: 250, width: 340, depth: 380, pattern: 'checker', prop: '🍳' },
-  { name: 'Salon',         wall: '#3b2f2a', floor: '#241d1a', accent: '#e0a458', height: 300, width: 420, depth: 460, pattern: 'panels',  prop: '🛋️' },
-  { name: 'Łazienka',      wall: '#cfe3f2', floor: '#38424a', accent: '#3f8fd0', height: 220, width: 240, depth: 280, pattern: 'checker', prop: '🚿' },
-  { name: 'Sypialnia',     wall: '#4a3350', floor: '#241a28', accent: '#c98bd8', height: 260, width: 360, depth: 400, pattern: 'plain',   prop: '🛏️' },
-  { name: 'Balkon',        wall: '#2b3a45', floor: '#1d262c', accent: '#6fd3e0', height: 330, width: 300, depth: 320, pattern: 'stripes', prop: '🌿' },
-  { name: 'Korytarz',      wall: '#25211d', floor: '#171412', accent: '#f3b81d', height: 230, width: 200, depth: 520, pattern: 'stripes', prop: '🕯️' },
-  { name: 'Biblioteka',    wall: '#3a2b1f', floor: '#221913', accent: '#d9b26a', height: 320, width: 400, depth: 420, pattern: 'panels',  prop: '📚' },
-  { name: 'Pracownia',     wall: '#1f2b3a', floor: '#141b24', accent: '#6aa9f0', height: 250, width: 320, depth: 360, pattern: 'dots',    prop: '🎧' },
-  { name: 'Spiżarnia',     wall: '#3d3520', floor: '#231e12', accent: '#e6c65c', height: 200, width: 220, depth: 260, pattern: 'dots',    prop: '🫙' },
-  { name: 'Schody',        wall: '#2a2a33', floor: '#191921', accent: '#a9a5ff', height: 380, width: 260, depth: 480, pattern: 'stripes', prop: '🪜' },
-  { name: 'Strych',        wall: '#3a3129', floor: '#221d18', accent: '#e08a4b', height: 200, width: 380, depth: 420, pattern: 'panels',  prop: '📦' },
-  { name: 'Piwnica',       wall: '#1b2320', floor: '#0f1513', accent: '#5fb08a', height: 210, width: 300, depth: 380, pattern: 'plain',   prop: '🔦' },
-  { name: 'Garaż',         wall: '#2c2f33', floor: '#1a1c1f', accent: '#d3d7dc', height: 280, width: 460, depth: 440, pattern: 'checker', prop: '🚗' },
-  { name: 'Ogród zimowy',  wall: '#24382c', floor: '#152018', accent: '#8fe08a', height: 350, width: 420, depth: 460, pattern: 'dots',    prop: '🪴' },
-  { name: 'Wieża',         wall: '#2d2438', floor: '#1a1522', accent: '#f3b81d', height: 430, width: 240, depth: 340, pattern: 'stripes', prop: '🔭' },
+  { name: 'Przedpokój',           wall: '#f2f0ea', floor: '#3c3733', accent: '#c9a227', height: 210, width: 260, depth: 300, pattern: 'plain',   prop: '🔑' },
+  { name: 'Kuchnia',              wall: '#dfe9e3', floor: '#2f3a35', accent: '#4aa06a', height: 250, width: 340, depth: 380, pattern: 'checker', prop: '🍳' },
+  { name: 'Salon',                wall: '#3b2f2a', floor: '#241d1a', accent: '#e0a458', height: 300, width: 420, depth: 460, pattern: 'panels',  prop: '🛋️' },
+  { name: 'Łazienka',             wall: '#cfe3f2', floor: '#38424a', accent: '#3f8fd0', height: 220, width: 240, depth: 280, pattern: 'checker', prop: '🚿' },
+  { name: 'Sypialnia',            wall: '#4a3350', floor: '#241a28', accent: '#c98bd8', height: 260, width: 360, depth: 400, pattern: 'plain',   prop: '🛏️' },
+  { name: 'Biuro',                wall: '#2b3a45', floor: '#1d262c', accent: '#6fd3e0', height: 330, width: 300, depth: 320, pattern: 'stripes', prop: '🖥️' },
+  { name: 'Wyjście na taras',     wall: '#25211d', floor: '#171412', accent: '#f3b81d', height: 230, width: 200, depth: 520, pattern: 'stripes', prop: '🚪' },
+  { name: 'Czytelnia',            wall: '#3a2b1f', floor: '#221913', accent: '#d9b26a', height: 320, width: 400, depth: 420, pattern: 'panels',  prop: '📖' },
+  { name: 'Pokój gier',           wall: '#1f2b3a', floor: '#141b24', accent: '#6aa9f0', height: 250, width: 320, depth: 360, pattern: 'dots',    prop: '🎮' },
+  { name: 'Regały',               wall: '#3d3520', floor: '#231e12', accent: '#e6c65c', height: 200, width: 220, depth: 260, pattern: 'dots',    prop: '📚' },
+  { name: 'Schody',               wall: '#2a2a33', floor: '#191921', accent: '#a9a5ff', height: 380, width: 260, depth: 480, pattern: 'stripes', prop: '🪜' },
+  { name: 'Spiżarnia',            wall: '#3a3129', floor: '#221d18', accent: '#e08a4b', height: 200, width: 380, depth: 420, pattern: 'panels',  prop: '🫙' },
+  { name: 'Sypialnia dziecka',    wall: '#1b2320', floor: '#0f1513', accent: '#5fb08a', height: 210, width: 300, depth: 380, pattern: 'plain',   prop: '🧸' },
+  { name: 'Garaż z samochodem',   wall: '#2c2f33', floor: '#1a1c1f', accent: '#d3d7dc', height: 280, width: 460, depth: 440, pattern: 'checker', prop: '🚗' },
+  { name: 'Taras',                wall: '#24382c', floor: '#152018', accent: '#8fe08a', height: 350, width: 420, depth: 460, pattern: 'dots',    prop: '☀️' },
+  { name: 'Warsztat',             wall: '#2d2438', floor: '#1a1522', accent: '#f3b81d', height: 430, width: 240, depth: 340, pattern: 'stripes', prop: '🔧' },
 ];
 
 export function roomsFor(count: number): Room[] {
@@ -68,6 +68,18 @@ export function roomTraits(r: Room): string {
       : r.pattern === 'panels' ? 'w panele'
       : 'gładkie ściany';
   return `${size}${tall} · ${pattern}`;
+}
+
+/**
+ * Layered background when a room has an image: dark scrim → photo → pattern.
+ * Uses CSS multi-background so the pattern shows through if the image fails.
+ */
+export function wallBackgroundWithImage(room: Room, imageUrl: string): string {
+  return [
+    'linear-gradient(rgba(0,0,0,0.38),rgba(0,0,0,0.38))',
+    `url("${imageUrl}") center/cover no-repeat`,
+    wallBackground(room),
+  ].join(',');
 }
 
 /** Tło ściany: kolor bazowy + wzór, ten sam w 3D i na kartce. */

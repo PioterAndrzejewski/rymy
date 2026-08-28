@@ -41,6 +41,15 @@ export function useSpeechInput({ lang = 'pl-PL', enabled, onWords }: Options) {
   onWordsRef.current = onWords;
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  /**
+   * Ile finalnych wyników z bieżącej sesji już oddaliśmy dalej.
+   *
+   * Chrome na Androidzie nie trzyma się `resultIndex`: przy `continuous`
+   * potrafi w każdym zdarzeniu przysłać całą listę od zera, więc liczenie
+   * od `event.resultIndex` dokładało te same słowa w kółko. Liczymy więc
+   * finały sami i bierzemy tylko te, których jeszcze nie było.
+   */
+  const deliveredFinals = useRef(0);
   /** czy wolno restartować po `onend` — gasimy przy sprzątaniu i po odmowie */
   const wantedRef = useRef(false);
   const restartTimer = useRef<number | undefined>(undefined);
@@ -62,12 +71,16 @@ export function useSpeechInput({ lang = 'pl-PL', enabled, onWords }: Options) {
     // oszczędza restarty.
     recognition.continuous = true;
 
-    recognition.onstart = () => setState('listening');
+    recognition.onstart = () => {
+      // Każdy start (także restart po ciszy) to nowa lista wyników.
+      deliveredFinals.current = 0;
+      setState('listening');
+    };
 
     recognition.onresult = (event) => {
       const finals: string[] = [];
       let pending = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      for (let i = 0; i < event.results.length; i++) {
         const result = event.results[i];
         const text = result[0]?.transcript ?? '';
         // Nie-finalne wyniki to połówki słów — do podglądu, nigdy do banku.
@@ -75,7 +88,15 @@ export function useSpeechInput({ lang = 'pl-PL', enabled, onWords }: Options) {
         else pending += text;
       }
       setInterim(pending.trim());
-      const tokens = finals.flatMap(tokenize);
+
+      // Lista finałów rośnie tylko na końcu, więc wystarczy odciąć ogon.
+      // Gdyby przeglądarka jednak skróciła listę (nowa sesja bez `onstart`),
+      // cofamy licznik, zamiast przemilczeć wszystko, co przyjdzie dalej.
+      if (finals.length < deliveredFinals.current) deliveredFinals.current = 0;
+      const fresh = finals.slice(deliveredFinals.current);
+      deliveredFinals.current = finals.length;
+
+      const tokens = fresh.flatMap(tokenize);
       if (tokens.length) {
         setInterim('');
         onWordsRef.current(tokens);
@@ -96,6 +117,7 @@ export function useSpeechInput({ lang = 'pl-PL', enabled, onWords }: Options) {
 
     recognition.onend = () => {
       setInterim('');
+      deliveredFinals.current = 0;
       if (!wantedRef.current) {
         setState('idle');
         return;

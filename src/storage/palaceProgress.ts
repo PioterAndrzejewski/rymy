@@ -27,6 +27,8 @@ export type PalaceRun = {
   level: number;
   words: string[];
   answers: string[];
+  /** rym, który dorzuciłeś w każdym pokoju ('' = poszedłeś bez rymu) */
+  rhymes?: string[];
   /** trafione na właściwej pozycji */
   exact: number;
   /** pamiętane, ale nie w tym pokoju */
@@ -108,6 +110,7 @@ export type RunInput = {
   level: number;
   words: string[];
   answers: string[];
+  rhymes: string[];
   recallMs: number;
   used3d: boolean;
   voice: boolean;
@@ -126,6 +129,7 @@ export function recordPalaceRun(input: RunInput): PalaceProgress {
     level: input.level,
     words: input.words,
     answers: input.answers,
+    rhymes: input.rhymes,
     exact,
     misplaced,
     recallMs: input.recallMs,

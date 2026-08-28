@@ -10,7 +10,7 @@ import {
 } from '@tabler/icons-react';
 import { playChime, playClick } from '@/audio/click';
 import {
-  corePool, isInBank, matchesEnding, matchHeard, rhymeCount, rhymeWords, RHYME_ENDINGS,
+  BASIC_SONG_WORDS, corePool, isInBank, matchesEnding, matchHeard, rhymeCount, rhymeWords, RHYME_ENDINGS,
 } from '@/wordbank/pl/rhymes';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { loadProgress, recordRound, type Progress } from '@/storage/rhymeProgress';
@@ -55,12 +55,30 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
    */
   const replay = useRef<{ list: string[]; i: number } | null>(null);
 
+  // Never repeat a word inside one session — musi być przed pickEnding i pickSeed.
+  const usedSeeds = useRef(new Set<string>());
+
+  /**
+   * W trybie 'basic' pickEnding dobiera słowo z BASIC_SONG_WORDS i odkłada je
+   * tutaj, żeby pickSeed mogło je od razu użyć jako seed (zamiast losować
+   * z corePool).
+   */
+  const pendingBasicWord = useRef<{ word: string; ending: string } | null>(null);
+
   const pickEnding = useMemo(
     () => () => {
       const r = replay.current;
       if (r && r.i < r.list.length) return r.list[r.i++];
       if (config.ending === 'plan') return pickPlanEnding(progressAtStart.current);
       if (config.ending === 'random') return RHYME_ENDINGS[Math.floor(Math.random() * RHYME_ENDINGS.length)];
+      if (config.ending === 'basic') {
+        const usedSet = usedSeeds.current;
+        const pool = BASIC_SONG_WORDS.filter((bw) => !usedSet.has(bw.word));
+        const from = pool.length ? pool : [...BASIC_SONG_WORDS];
+        const pick = from[Math.floor(Math.random() * from.length)];
+        pendingBasicWord.current = pick;
+        return pick.ending;
+      }
       return config.ending;
     },
     [config.ending],
@@ -68,10 +86,22 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
   // The prompt is a concrete word, not a bare ending — you rhyme to something.
   // Z trzonu rodziny, żeby na tablicy nie lądowało „ogólnikowość".
-  // Never repeat a word inside one session.
-  const usedSeeds = useRef(new Set<string>());
   const pickSeed = useMemo(
     () => (e: string) => {
+      if (config.ending === 'basic') {
+        const pending = pendingBasicWord.current;
+        pendingBasicWord.current = null;
+        if (pending) {
+          usedSeeds.current.add(pending.word);
+          return pending.word;
+        }
+        // fallback — nie powinno się zdarzyć, ale na wszelki wypadek
+        const forEnding = BASIC_SONG_WORDS.filter((bw) => bw.ending === e && !usedSeeds.current.has(bw.word));
+        const from = forEnding.length ? forEnding : BASIC_SONG_WORDS.filter((bw) => bw.ending === e);
+        const word = from.length ? from[Math.floor(Math.random() * from.length)].word : '';
+        if (word) usedSeeds.current.add(word);
+        return word;
+      }
       const core = e ? corePool(e) : [];
       const pool = core.filter((w) => !usedSeeds.current.has(w));
       const from = pool.length ? pool : core;
@@ -79,7 +109,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       if (word) usedSeeds.current.add(word);
       return word;
     },
-    [],
+    [config.ending],
   );
 
   /** Dowolna rodzina poza tą — na „jeszcze raz, inna końcówka". */
@@ -101,6 +131,15 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   const [hints, setHints] = useState(false);
   const [mic, setMic] = useState(config.voice);
   const [done, setDone] = useState(false);
+  /**
+   * Chwila po ostatniej sekundzie, w której nie da się już nic dodać ręcznie,
+   * ale zbieramy jeszcze to, co mikrofon usłyszał przed gongiem — rozpoznawanie
+   * oddaje słowo dopiero po chwili ciszy, więc bez tego ostatnie 1-2 słowa
+   * przepadały.
+   */
+  const [flush, setFlush] = useState(false);
+  /** czy mikrofon faktycznie słucha — ustawiane niżej, czytane w efektach */
+  const micLive = useRef(false);
 
   const totalMs = config.seconds * 1000;
   const wordMs = config.wordSeconds * 1000;
@@ -138,7 +177,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       const now = performance.now();
       const dt = now - last;
       last = now;
-      setRemaining((prev) => Math.max(0, prev - dt));
+      if (!timed) setRemaining((prev) => Math.max(0, prev - dt));
       if (timed) setWordRemaining((prev) => Math.max(0, prev - dt));
       raf = requestAnimationFrame(tick);
     };
@@ -147,15 +186,40 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   }, [running, done, timed]);
 
   useEffect(() => {
-    if (done || remaining > 0) return;
+    if (timed || done || flush || remaining > 0) return;
     setRunning(false);
-    setDone(true);
     playChime();
-  }, [remaining, done]);
+    // Gong zamyka pisanie od razu; z mikrofonem czekamy jeszcze moment
+    // na spóźnione wyniki.
+    if (mic && micLive.current) setFlush(true);
+    else setDone(true);
+  }, [remaining, done, flush, mic]);
+
+  /** ile czekamy na spóźnione wyniki rozpoznawania po gongu */
+  const MIC_GRACE = 2200;
+  /** i ile najwyżej na przepchnięcie kolejki ech przez pole wpisu */
+  const MIC_DRAIN_CAP = 4000;
+
+  useEffect(() => {
+    if (!flush) return;
+    let drain = 0;
+    const deadline = window.setTimeout(() => {
+      const from = performance.now();
+      drain = window.setInterval(() => {
+        // Słowo w trakcie błysku dokończ, ale nie w nieskończoność.
+        const busy = echoRef.current || heardQueue.current.length > 0;
+        if (busy && performance.now() - from < MIC_DRAIN_CAP) return;
+        window.clearInterval(drain);
+        setFlush(false);
+        setDone(true);
+      }, 150);
+    }, MIC_GRACE);
+    return () => { window.clearTimeout(deadline); window.clearInterval(drain); };
+  }, [flush]);
 
   useEffect(() => {
     if (!timed || done || !running || wordRemaining > 0) return;
-    advanceRef.current();
+    setDone(true);
   }, [wordRemaining, timed, done, running]);
 
   // Metronom milknie przy włączonym mikrofonie: klik wchodzi prosto w nasłuch,
@@ -269,18 +333,19 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
   // Wyłączony mikrofon albo koniec rundy nie zostawia słowa wiszącego w polu.
   useEffect(() => {
-    if (mic && running && !done) return;
+    if (mic && !done && (running || flush)) return;
     clearEcho();
     setInput((v) => (echoRef.current ? '' : v));
     echoRef.current = false;
-  }, [mic, running, done]);
+  }, [mic, running, done, flush]);
 
   useEffect(() => clearEcho, []);
 
   const speech = useSpeechInput({
-    enabled: mic && running && !done,
+    enabled: mic && !done && (running || flush),
     onWords: handleHeard,
   });
+  micLive.current = mic && speech.supported && speech.state !== 'denied';
 
   // --- podsumowanie i zapis -------------------------------------------------
 
@@ -293,7 +358,8 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     savedOnce.current = true;
 
     const p0 = progressAtStart.current;
-    const all: Round[] = [...rounds, { ending, seed, entries }];
+    // In timed mode the current word was not completed — only count finished rounds.
+    const all: Round[] = timed ? [...rounds] : [...rounds, { ending, seed, entries }];
     const result: Scored[] = all
       .filter((r) => r.ending)
       .map((r) => {
@@ -347,6 +413,11 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
 
     const next = [value, ...entriesRef.current];
     entriesRef.current = next;
+    // In timed mode: 1 valid rhyme advances immediately — that's the whole challenge.
+    if (timed && matchesEnding(value, ending)) {
+      nextWord(next);
+      return 'advanced';
+    }
     if (config.sessionMode === 'quota' && rhymesOnly(next, ending).length >= config.quota) {
       nextWord(next);
       return 'advanced';
@@ -427,12 +498,17 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     setRemaining(totalMs);
     setWordRemaining(wordMs);
     setDone(false);
+    setFlush(false);
     setRunning(true);
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
-  const pct = totalMs > 0 ? (1 - remaining / totalMs) * 100 : 0;
-  const lastStretch = remaining <= Math.min(10_000, totalMs / 3);
+  const pct = timed
+    ? (1 - wordRemaining / wordMs) * 100
+    : (totalMs > 0 ? (1 - remaining / totalMs) * 100 : 0);
+  const lastStretch = timed
+    ? wordRemaining <= wordMs / 3
+    : remaining <= Math.min(10_000, totalMs / 3);
   const liveRhymes = rhymesOnly(entries, ending);
 
   if (done) {
@@ -442,19 +518,25 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     const freshCount = all.reduce((n, r) => n + r.fresh.size, 0);
     const ownCount = all.reduce((n, r) => n + r.ownWords.length, 0);
     const offCount = all.reduce((n, r) => n + r.offWords.length, 0);
-    const headline = config.sessionMode === 'quota' ? rounds.length : totalRhymes;
-    const headlineLabel = config.sessionMode === 'quota'
-      ? `${rounds.length === 1 ? 'słowo zaliczone' : 'słów zaliczonych'}`
-      : rhymeWord(totalRhymes);
+    const headline = timed ? rounds.length : config.sessionMode === 'quota' ? rounds.length : totalRhymes;
+    const headlineLabel = timed
+      ? `${rounds.length === 1 ? 'słowo z rzędu' : 'słów z rzędu'}`
+      : config.sessionMode === 'quota'
+        ? `${rounds.length === 1 ? 'słowo zaliczone' : 'słów zaliczonych'}`
+        : rhymeWord(totalRhymes);
 
     return (
       <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up" ta="center">
         <Stack gap="lg" align="center">
-          <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>Czas minął ⏱</Text>
+          <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>
+            {timed ? 'Seria zakończona 🏆' : 'Czas minął ⏱'}
+          </Text>
           <Text c="dimmed">
-            {multi
-              ? `${all.length} ${all.length === 1 ? 'słowo' : all.length < 5 ? 'słowa' : 'słów'} · ${fmtDuration(config.seconds)}`
-              : `rym do ${seed || `-${ending}`} (-${ending}) · ${fmtDuration(config.seconds)}`}
+            {timed
+              ? `${config.wordSeconds} s na słowo`
+              : multi
+                ? `${all.length} ${all.length === 1 ? 'słowo' : all.length < 5 ? 'słowa' : 'słów'} · ${fmtDuration(config.seconds)}`
+                : `rym do ${seed || `-${ending}`} (-${ending}) · ${fmtDuration(config.seconds)}`}
           </Text>
           <Text style={{ fontSize: 'clamp(56px, 16vw, 72px)', fontWeight: 800 }} c="brand.3">{headline}</Text>
           <Text size="sm" c="dimmed" mt={-12}>
@@ -525,18 +607,25 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
               >
                 {running ? <IconPlayerPauseFilled size={20} /> : <IconPlayerPlayFilled size={20} />}
               </ActionIcon>
-              <Box>
-                <Text size="10px" tt="uppercase" lts={1} c="dimmed">pozostało</Text>
-                <Text size="24px" fw={800} ff="monospace" c={lastStretch ? 'red.4' : undefined}>
-                  {fmtTime(remaining)}
-                </Text>
-              </Box>
+              {timed ? (
+                <Box>
+                  <Text size="10px" tt="uppercase" lts={1} c="dimmed">seria</Text>
+                  <Text size="24px" fw={800} ff="monospace" c="brand.4">{rounds.length}</Text>
+                </Box>
+              ) : (
+                <Box>
+                  <Text size="10px" tt="uppercase" lts={1} c="dimmed">pozostało</Text>
+                  <Text size="24px" fw={800} ff="monospace" c={lastStretch ? 'red.4' : undefined}>
+                    {fmtTime(remaining)}
+                  </Text>
+                </Box>
+              )}
               {timed && (
                 <Box>
                   <Text size="10px" tt="uppercase" lts={1} c="dimmed">to słowo</Text>
                   <Text
                     size="24px" fw={800} ff="monospace"
-                    c={wordRemaining <= 5000 ? 'red.4' : 'brand.4'}
+                    c={wordRemaining <= wordMs * 0.5 ? 'red.4' : 'brand.4'}
                   >
                     {Math.ceil(wordRemaining / 1000)}s
                   </Text>
@@ -658,7 +747,9 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
               </Text>
             ) : (
               <Text size="sm" c="dimmed" fs="italic" style={{ minHeight: 22 }}>
-                {speech.interim || (speech.state === 'listening' ? 'słucham…' : 'uruchamiam mikrofon…')}
+                {flush
+                  ? 'czas minął — zbieram ostatnie słowa…'
+                  : speech.interim || (speech.state === 'listening' ? 'słucham…' : 'uruchamiam mikrofon…')}
               </Text>
             )}
 
@@ -677,7 +768,7 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
           </Stack>
         )}
 
-        {multi && (
+        {multi && !timed && (
           <Button
             mt="sm" size="xs" variant="subtle" color="gray"
             rightSection={<IconArrowRight size={14} />}

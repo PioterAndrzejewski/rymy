@@ -1,21 +1,31 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 import {
-  Stack, Title, Text, Paper, Table, Badge, Group, ActionIcon, Tooltip, Box, Divider,
-} from '@mantine/core';
-import { IconTrash, IconCopy } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
-import { useLibrary } from '@/state/library';
-import { AddTrackForm } from '@/components/AddTrackForm';
-import { deleteUserTrack } from '@/storage/userTracks';
-import { clearOverride } from '@/storage/trackOverrides';
-import type { Track } from '@/types';
-import { fmtBpm } from '@/lib/format';
+  Stack,
+  Title,
+  Text,
+  Paper,
+  Table,
+  Badge,
+  Group,
+  ActionIcon,
+  Tooltip,
+  Box,
+  Divider,
+} from "@mantine/core";
+import { IconTrash, IconCopy } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { useLibrary } from "@/state/library";
+import { AddTrackForm } from "@/components/AddTrackForm";
+import { deleteUserTrack } from "@/storage/userTracks";
+import { clearOverride } from "@/storage/trackOverrides";
+import type { Track } from "@/types";
+import { fmtBpm } from "@/lib/format";
 
 function toManifestSnippet(t: Track): string {
   const entry = {
     id: t.id,
     name: t.name,
-    path: `/tracks/${t.name.replace(/\s+/g, '_')}.mp3`,
+    path: `/tracks/${t.name.replace(/\s+/g, "_")}.mp3`,
     bpm: t.bpm,
     timeSignature: t.timeSignature,
     downbeatOffsetMs: t.downbeatOffsetMs,
@@ -27,22 +37,25 @@ function toManifestSnippet(t: Track): string {
 
 export default function Tracks() {
   const { tracks, loading, error, refresh } = useLibrary();
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
   async function remove(id: string) {
     await deleteUserTrack(id);
     clearOverride(id);
     await refresh();
-    notifications.show({ color: 'gray', message: 'Usunięto podkład' });
+    notifications.show({ color: "gray", message: "Usunięto podkład" });
   }
 
   async function copyManifest(t: Track) {
     const snippet = toManifestSnippet(t);
     await navigator.clipboard.writeText(snippet);
     notifications.show({
-      color: 'brand',
-      title: 'Skopiowano wpis manifestu',
-      message: 'Wklej do public/tracks/tracks.json → tracks[] i wgraj plik audio do public/tracks/.',
+      color: "brand",
+      title: "Skopiowano wpis manifestu",
+      message:
+        "Wklej do public/tracks/tracks.json → tracks[] i wgraj plik audio do public/tracks/.",
     });
   }
 
@@ -50,10 +63,6 @@ export default function Tracks() {
     <Stack gap="lg" my="md">
       <div>
         <Title order={2}>Podkłady</Title>
-        <Text c="dimmed" size="sm">
-          Manifest (<code>public/tracks/tracks.json</code>) jest źródłem prawdy; uploady trafiają
-          do IndexedDB. Dla podkładów user możesz skopiować wpis manifestu, żeby „awansować” je do repo.
-        </Text>
       </div>
 
       <AddTrackForm />
@@ -62,13 +71,14 @@ export default function Tracks() {
         <Group p="sm" justify="space-between" wrap="wrap" gap="xs">
           <Text fw={500}>Biblioteka</Text>
           <Text size="xs" c="dimmed">
-            {loading ? 'ładowanie…' : `${tracks.length} podkład(ów)`}
+            {loading ? "ładowanie…" : `${tracks.length} podkład(ów)`}
             {error && ` · błąd: ${error}`}
           </Text>
         </Group>
         {tracks.length === 0 ? (
           <Text p="md" size="sm" c="dimmed">
-            Brak podkładów. Dodaj plik przez formularz, albo dodaj wpis w <code>tracks.json</code>.
+            Brak podkładów. Dodaj plik przez formularz, albo dodaj wpis w{" "}
+            <code>tracks.json</code>.
           </Text>
         ) : (
           <>
@@ -79,33 +89,55 @@ export default function Tracks() {
                 <Box key={t.id}>
                   <Divider />
                   <Box p="sm">
-                    <Group justify="space-between" wrap="nowrap" align="start" gap="xs">
+                    <Group
+                      justify="space-between"
+                      wrap="nowrap"
+                      align="start"
+                      gap="xs"
+                    >
                       <Box style={{ minWidth: 0 }}>
                         <Text fw={600}>{t.name}</Text>
                         <Group gap={6} mt={6} wrap="wrap">
-                          <Badge variant="light" color="gray" size="sm">{fmtBpm(t.bpm)} BPM</Badge>
+                          <Badge variant="light" color="gray" size="sm">
+                            {fmtBpm(t.bpm)} BPM
+                          </Badge>
                           <Badge variant="light" color="gray" size="sm">
                             {t.timeSignature[0]}/{t.timeSignature[1]}
                           </Badge>
-                          <Badge variant="light" color="gray" size="sm">intro {t.introBars ?? 0}</Badge>
-                          <Badge variant="light" color="gray" size="sm">{t.downbeatOffsetMs} ms</Badge>
-                          {t.style && <Badge variant="light" color="gray" size="sm">{t.style}</Badge>}
-                          <Badge variant="light" color={t.source === 'manifest' ? 'accent' : 'brand'} size="sm">
+                          <Badge variant="light" color="gray" size="sm">
+                            intro {t.introBars ?? 0}
+                          </Badge>
+                          <Badge variant="light" color="gray" size="sm">
+                            {t.downbeatOffsetMs} ms
+                          </Badge>
+                          {t.style && (
+                            <Badge variant="light" color="gray" size="sm">
+                              {t.style}
+                            </Badge>
+                          )}
+                          <Badge
+                            variant="light"
+                            color={t.source === "manifest" ? "accent" : "brand"}
+                            size="sm"
+                          >
                             {t.source}
                           </Badge>
                         </Group>
                       </Box>
-                      {t.source === 'user' && (
+                      {t.source === "user" && (
                         <Group gap={4} wrap="nowrap">
                           <ActionIcon
-                            variant="subtle" size="lg"
+                            variant="subtle"
+                            size="lg"
                             aria-label="Skopiuj wpis manifestu"
                             onClick={() => void copyManifest(t)}
                           >
                             <IconCopy size={18} />
                           </ActionIcon>
                           <ActionIcon
-                            variant="subtle" size="lg" color="red"
+                            variant="subtle"
+                            size="lg"
+                            color="red"
                             aria-label="Usuń podkład"
                             onClick={() => void remove(t.id)}
                           >
@@ -140,27 +172,43 @@ export default function Tracks() {
                       <Table.Tr key={t.id}>
                         <Table.Td style={{ minWidth: 140 }}>{t.name}</Table.Td>
                         <Table.Td>{fmtBpm(t.bpm)}</Table.Td>
-                        <Table.Td>{t.timeSignature[0]}/{t.timeSignature[1]}</Table.Td>
-                        <Table.Td style={{ whiteSpace: 'nowrap' }}>{t.downbeatOffsetMs} ms</Table.Td>
-                        <Table.Td>{t.introBars ?? 0}</Table.Td>
-                        <Table.Td>{t.style ?? '—'}</Table.Td>
                         <Table.Td>
-                          <Badge variant="light" color={t.source === 'manifest' ? 'accent' : 'brand'}>
-                            {t.source}
+                          {t.timeSignature[0]}/{t.timeSignature[1]}
+                        </Table.Td>
+                        <Table.Td style={{ whiteSpace: "nowrap" }}>
+                          {t.downbeatOffsetMs} ms
+                        </Table.Td>
+                        <Table.Td>{t.introBars ?? 0}</Table.Td>
+                        <Table.Td>{t.style ?? "—"}</Table.Td>
+                        <Table.Td>
+                          <Badge
+                            variant="light"
+                            color={t.source === "manifest" ? "accent" : "brand"}
+                          >
+                            {t.source === "manifest" ? "Bazowy" : t.source}
                           </Badge>
                         </Table.Td>
                         <Table.Td>
                           <Group gap={4} justify="flex-end" wrap="nowrap">
-                            {t.source === 'user' && (
-                              <Tooltip label="Skopiuj wpis manifestu">
-                                <ActionIcon variant="subtle" size="lg" onClick={() => void copyManifest(t)}>
+                            {t.source === "user" && (
+                              <Tooltip label="Skopiuj wpis z konfiguracji">
+                                <ActionIcon
+                                  variant="subtle"
+                                  size="lg"
+                                  onClick={() => void copyManifest(t)}
+                                >
                                   <IconCopy size={16} />
                                 </ActionIcon>
                               </Tooltip>
                             )}
-                            {t.source === 'user' && (
+                            {t.source === "user" && (
                               <Tooltip label="Usuń">
-                                <ActionIcon variant="subtle" size="lg" color="red" onClick={() => void remove(t.id)}>
+                                <ActionIcon
+                                  variant="subtle"
+                                  size="lg"
+                                  color="red"
+                                  onClick={() => void remove(t.id)}
+                                >
                                   <IconTrash size={16} />
                                 </ActionIcon>
                               </Tooltip>
