@@ -1,30 +1,42 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActionIcon, Badge, Box, Button, Collapse, Flex, Group, Paper, Progress, SimpleGrid, Stack, Switch, Text, TextInput,
+  ActionIcon, Badge, Box, Button, Collapse, Flex, Group, Paper, Progress, SimpleGrid,
+  Stack, Switch, Text, TextInput,
 } from '@mantine/core';
 import {
-  IconChevronDown, IconPlayerPauseFilled, IconPlayerPlayFilled, IconRefresh, IconSettings, IconX,
+  IconArrowRight, IconChevronDown, IconPlayerPauseFilled, IconPlayerPlayFilled,
+  IconRefresh, IconSettings, IconX,
 } from '@tabler/icons-react';
 import { playChime, playClick } from '@/audio/click';
 import { RHYME_ENDINGS, rhymeCount, rhymeWords } from '@/wordbank/pl/rhymes';
 import { fmtTime } from '@/lib/format';
-import { fmtDuration, type FamilyConfig } from './config';
+import { fmtDuration, rhymeWord, type FamilyConfig } from './config';
+
+/** One word you rhymed to, plus what you managed to write for it. */
+type Round = { ending: string; seed: string; entries: string[] };
 
 export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () => void }) {
+  const multi = config.sessionMode !== 'single';
+  const timed = config.sessionMode === 'timed';
+
   const pickEnding = useMemo(
     () => () => {
       if (config.ending !== 'random') return config.ending;
-      const pool = RHYME_ENDINGS;
-      return pool.length ? pool[Math.floor(Math.random() * pool.length)] : '';
+      return RHYME_ENDINGS[Math.floor(Math.random() * RHYME_ENDINGS.length)];
     },
     [config.ending],
   );
 
   // The prompt is a concrete word, not a bare ending — you rhyme to something.
+  // Never repeat a word inside one session.
+  const usedSeeds = useRef(new Set<string>());
   const pickSeed = useMemo(
     () => (e: string) => {
-      const pool = e ? rhymeWords(e) : [];
-      return pool.length ? pool[Math.floor(Math.random() * pool.length)] : '';
+      const pool = (e ? rhymeWords(e) : []).filter((w) => !usedSeeds.current.has(w));
+      const from = pool.length ? pool : rhymeWords(e);
+      const word = from.length ? from[Math.floor(Math.random() * from.length)] : '';
+      if (word) usedSeeds.current.add(word);
+      return word;
     },
     [],
   );
@@ -32,43 +44,65 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   const [ending, setEnding] = useState(pickEnding);
   const [seed, setSeed] = useState(() => pickSeed(ending));
   const [entries, setEntries] = useState<string[]>([]);
+  const [rounds, setRounds] = useState<Round[]>([]);
   const [input, setInput] = useState('');
   const [shake, setShake] = useState(false);
   const [hints, setHints] = useState(false);
   const [done, setDone] = useState(false);
-  const [showAll, setShowAll] = useState(false);
 
   const totalMs = config.seconds * 1000;
+  const wordMs = config.wordSeconds * 1000;
   const [remaining, setRemaining] = useState(totalMs);
+  const [wordRemaining, setWordRemaining] = useState(wordMs);
   const [running, setRunning] = useState(true);
-  const lastRef = useRef(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  // countdown
+  /** Bank the current word and move on. */
+  function nextWord(finished: string[] = entries) {
+    setRounds((r) => [...r, { ending, seed, entries: finished }]);
+    const nextEnding = config.ending === 'random' ? pickEnding() : ending;
+    setEnding(nextEnding);
+    setSeed(pickSeed(nextEnding));
+    setEntries([]);
+    setInput('');
+    setWordRemaining(wordMs);
+    playClick({ accent: true, volume: 0.4 });
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
+  const advanceRef = useRef(nextWord);
+  advanceRef.current = nextWord;
+
+  // One clock drives both the round and (in timed mode) the current word.
   useEffect(() => {
     if (!running || done) return;
-    lastRef.current = performance.now();
+    let last = performance.now();
     let raf = 0;
     const tick = () => {
       const now = performance.now();
-      const dt = now - lastRef.current;
-      lastRef.current = now;
-      setRemaining((prev) => {
-        const next = Math.max(0, prev - dt);
-        if (next === 0) {
-          setRunning(false);
-          setDone(true);
-          playChime();
-        }
-        return next;
-      });
+      const dt = now - last;
+      last = now;
+      setRemaining((prev) => Math.max(0, prev - dt));
+      if (timed) setWordRemaining((prev) => Math.max(0, prev - dt));
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [running, done]);
+  }, [running, done, timed]);
+
+  useEffect(() => {
+    if (done || remaining > 0) return;
+    setRunning(false);
+    setDone(true);
+    playChime();
+  }, [remaining, done]);
+
+  useEffect(() => {
+    if (!timed || done || !running || wordRemaining > 0) return;
+    advanceRef.current();
+  }, [wordRemaining, timed, done, running]);
 
   // optional metronome
   useEffect(() => {
@@ -77,25 +111,10 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
     return () => window.clearInterval(id);
   }, [config.bpm, running, done]);
 
-  // Full rhyme family, alphabetical — the payoff shown after the round.
   const bank = useMemo(
     () => (ending ? rhymeWords(ending).filter((w) => w !== seed) : []),
     [ending, seed],
   );
-
-  // What the bank knows and the user didn't reach — the payoff of the round.
-  const allMissed = useMemo(() => {
-    if (!done) return [];
-    const used = new Set(entries.map((e) => e.toLowerCase()));
-    return bank.filter((w) => !used.has(w.toLowerCase()));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [done, bank]);
-
-  const missed = useMemo(
-    () => [...allMissed].sort(() => Math.random() - 0.5).slice(0, 10),
-    [allMissed],
-  );
-
   const hintSample = useMemo(
     () => [...bank].sort(() => Math.random() - 0.5).slice(0, 24).sort((a, b) => a.localeCompare(b, 'pl')),
     [bank],
@@ -109,20 +128,27 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       window.setTimeout(() => setShake(false), 350);
       return;
     }
-    setEntries((e) => [value, ...e]);
+    const next = [value, ...entries];
+    if (config.sessionMode === 'quota' && next.length >= config.quota) {
+      nextWord(next);
+      return;
+    }
+    setEntries(next);
     setInput('');
   }
 
-  function restart(newEnding: boolean) {
+  function restart() {
+    usedSeeds.current.clear();
+    const next = config.ending === 'random' ? pickEnding() : ending;
+    setEnding(next);
+    setSeed(pickSeed(next));
     setEntries([]);
+    setRounds([]);
     setInput('');
     setRemaining(totalMs);
+    setWordRemaining(wordMs);
     setDone(false);
-    setShowAll(false);
     setRunning(true);
-    const next = newEnding ? pickEnding() : ending;
-    if (newEnding) setEnding(next);
-    setSeed(pickSeed(next));
     window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
@@ -130,67 +156,37 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
   const lastStretch = remaining <= Math.min(10_000, totalMs / 3);
 
   if (done) {
+    const all: Round[] = [...rounds, { ending, seed, entries }];
+    const played = all.filter((r) => r.entries.length > 0 || all.length === 1);
+    const totalRhymes = all.reduce((n, r) => n + r.entries.length, 0);
+    const headline = config.sessionMode === 'quota' ? rounds.length : totalRhymes;
+    const headlineLabel = config.sessionMode === 'quota'
+      ? `${rounds.length === 1 ? 'słowo zaliczone' : 'słów zaliczonych'}`
+      : rhymeWord(totalRhymes);
+
     return (
       <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" className="rymy-fade-up" ta="center">
         <Stack gap="lg" align="center">
           <Text style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: 800 }}>Czas minął ⏱</Text>
           <Text c="dimmed">
-            rym do <b>{seed || `-${ending}`}</b> (-{ending}) · {fmtDuration(config.seconds)}
+            {multi
+              ? `${all.length} ${all.length === 1 ? 'słowo' : all.length < 5 ? 'słowa' : 'słów'} · ${fmtDuration(config.seconds)}`
+              : `rym do ${seed || `-${ending}`} (-${ending}) · ${fmtDuration(config.seconds)}`}
           </Text>
-          <Text style={{ fontSize: 'clamp(56px, 16vw, 72px)', fontWeight: 800 }} c="brand.3">{entries.length}</Text>
-          <Text size="sm" c="dimmed" mt={-12}>rymów</Text>
-          {entries.length > 0 && (
-            <Group gap={6} justify="center" wrap="wrap" maw={720}>
-              {entries.map((w) => (
-                <Badge key={w} size="lg" variant="light" color="brand">{w}</Badge>
-              ))}
-            </Group>
-          )}
-          {missed.length > 0 && (
-            <Paper withBorder p="md" radius="md" maw={720} w="100%" bg="rgba(255,255,255,0.02)">
-              <Text size="sm" fw={700} mb={2}>O tym nie pomyślałeś</Text>
-              <Text size="xs" c="dimmed" mb="sm">
-                Kilka słów rymujących się z „{seed}", których nie wpisałeś — znamy ich {allMissed.length}.
-              </Text>
-              <Group gap={6} justify="center" wrap="wrap">
-                {missed.map((w) => (
-                  <Badge key={w} size="lg" variant="light" color="gray">{w}</Badge>
-                ))}
-              </Group>
+          <Text style={{ fontSize: 'clamp(56px, 16vw, 72px)', fontWeight: 800 }} c="brand.3">{headline}</Text>
+          <Text size="sm" c="dimmed" mt={-12}>
+            {headlineLabel}
+            {config.sessionMode === 'quota' && totalRhymes > 0 && ` · ${totalRhymes} ${rhymeWord(totalRhymes)} łącznie`}
+          </Text>
 
-              {allMissed.length > missed.length && (
-                <>
-                  <Collapse in={showAll}>
-                    <Text size="xs" c="dimmed" ta="left" mt="md" mb="xs">
-                      Cała rodzina -{ending} ({rhymeCount(ending)} słów), alfabetycznie:
-                    </Text>
-                    <SimpleGrid cols={{ base: 2, xs: 3, sm: 4, md: 5 }} spacing={6}>
-                      {allMissed.map((w) => (
-                        <Badge key={w} variant="light" color="gray" style={{ maxWidth: '100%' }}>
-                          {w}
-                        </Badge>
-                      ))}
-                    </SimpleGrid>
-                  </Collapse>
-                  <Button
-                    mt="sm" size="xs" variant="subtle" color="gray"
-                    rightSection={
-                      <IconChevronDown
-                        size={14}
-                        style={{ transform: showAll ? 'rotate(180deg)' : undefined, transition: 'transform 180ms ease' }}
-                      />
-                    }
-                    onClick={() => setShowAll((v) => !v)}
-                  >
-                    {showAll ? 'Zwiń' : `Pokaż więcej (${allMissed.length - missed.length})`}
-                  </Button>
-                </>
-              )}
-            </Paper>
-          )}
+          <Stack gap="sm" w="100%" maw={720}>
+            {played.map((round, i) => (
+              <RoundResult key={`${round.seed}-${i}`} round={round} solo={!multi} />
+            ))}
+          </Stack>
 
           <Stack gap="xs" w="100%" maw={360}>
-            <Button size="md" color="brand" leftSection={<IconRefresh size={16} />} onClick={() => restart(config.ending === 'random')}>
+            <Button size="md" color="brand" leftSection={<IconRefresh size={16} />} onClick={restart}>
               Jeszcze raz
             </Button>
             <Button size="md" variant="subtle" color="gray" leftSection={<IconSettings size={16} />} onClick={onExit}>
@@ -221,6 +217,17 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
                   {fmtTime(remaining)}
                 </Text>
               </Box>
+              {timed && (
+                <Box>
+                  <Text size="10px" tt="uppercase" lts={1} c="dimmed">to słowo</Text>
+                  <Text
+                    size="24px" fw={800} ff="monospace"
+                    c={wordRemaining <= 5000 ? 'red.4' : 'brand.4'}
+                  >
+                    {Math.ceil(wordRemaining / 1000)}s
+                  </Text>
+                </Box>
+              )}
             </Group>
             <Button size="sm" variant="subtle" color="gray" leftSection={<IconX size={14} />} onClick={onExit}>
               Zakończ
@@ -229,7 +236,14 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
           <Group gap="xs" wrap="wrap" justify="space-between">
             <Switch size="sm" color="brand" label="Podpowiedzi" checked={hints} onChange={(e) => setHints(e.currentTarget.checked)} />
             <Group gap="xs" wrap="nowrap">
-              <Badge size="lg" variant="light" color="brand">{entries.length} rymów</Badge>
+              {multi && (
+                <Badge size="lg" variant="light" color="gray">słowo {rounds.length + 1}</Badge>
+              )}
+              <Badge size="lg" variant="light" color="brand">
+                {config.sessionMode === 'quota'
+                  ? `${entries.length} / ${config.quota}`
+                  : `${entries.length} ${rhymeWord(entries.length)}`}
+              </Badge>
               {config.bpm > 0 && <Badge size="lg" variant="light" color="gray">{config.bpm} BPM</Badge>}
             </Group>
           </Group>
@@ -240,6 +254,8 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
       <Paper withBorder p={{ base: 'md', sm: 'xl' }} radius="md" ta="center">
         <Text size="xs" c="dimmed" tt="uppercase" lts={1}>rymuj do</Text>
         <Text
+          key={seed}
+          className="rymy-pop"
           c="brand.3"
           style={{
             fontSize: 'clamp(44px, 14vw, 80px)',
@@ -282,6 +298,17 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
           </Button>
         </Flex>
 
+        {multi && (
+          <Button
+            mt="sm" size="xs" variant="subtle" color="gray"
+            rightSection={<IconArrowRight size={14} />}
+            onClick={() => nextWord()}
+            disabled={!running}
+          >
+            Następne słowo
+          </Button>
+        )}
+
         {entries.length > 0 && (
           <Group justify="center" gap={6} wrap="wrap" mt="lg">
             {entries.map((w) => (
@@ -315,5 +342,84 @@ export function RhymeRun({ config, onExit }: { config: FamilyConfig; onExit: () 
         </Paper>
       )}
     </Stack>
+  );
+}
+
+/** One word from the session: what you wrote, and what you missed. */
+function RoundResult({ round, solo }: { round: Round; solo: boolean }) {
+  const [open, setOpen] = useState(false);
+
+  const missedAll = useMemo(() => {
+    const used = new Set(round.entries.map((e) => e.toLowerCase()));
+    return rhymeWords(round.ending).filter((w) => w !== round.seed && !used.has(w.toLowerCase()));
+  }, [round]);
+  const sample = useMemo(
+    () => [...missedAll].sort(() => Math.random() - 0.5).slice(0, 10),
+    [missedAll],
+  );
+
+  return (
+    <Paper withBorder p="md" radius="md" bg="rgba(255,255,255,0.02)" ta="left">
+      <Group justify="space-between" wrap="wrap" gap="xs" mb="sm">
+        <Group gap={8}>
+          <Text fw={700}>{round.seed}</Text>
+          <Badge size="sm" variant="light" color="gray">-{round.ending}</Badge>
+        </Group>
+        <Badge size="sm" variant="light" color={round.entries.length ? 'brand' : 'gray'}>
+          {round.entries.length} {rhymeWord(round.entries.length)}
+        </Badge>
+      </Group>
+
+      {round.entries.length > 0 && (
+        <Group gap={6} wrap="wrap" mb="sm">
+          {round.entries.map((w) => (
+            <Badge key={w} size="lg" variant="light" color="brand">{w}</Badge>
+          ))}
+        </Group>
+      )}
+
+      {sample.length > 0 && (
+        <>
+          <Text size="sm" fw={700} mb={2}>O tym nie pomyślałeś</Text>
+          <Text size="xs" c="dimmed" mb="sm">
+            {solo ? 'Kilka słów, których nie wpisałeś' : 'Czego zabrakło'} — znamy ich {missedAll.length}.
+          </Text>
+          <Group gap={6} wrap="wrap">
+            {sample.map((w) => (
+              <Badge key={w} size="lg" variant="light" color="gray">{w}</Badge>
+            ))}
+          </Group>
+
+          {missedAll.length > sample.length && (
+            <>
+              <Collapse in={open}>
+                <Text size="xs" c="dimmed" mt="md" mb="xs">
+                  Cała rodzina -{round.ending} ({rhymeCount(round.ending)} słów), alfabetycznie:
+                </Text>
+                <SimpleGrid cols={{ base: 2, xs: 3, sm: 4, md: 5 }} spacing={6}>
+                  {missedAll.map((w) => (
+                    <Badge key={w} variant="light" color="gray" style={{ maxWidth: '100%' }}>
+                      {w}
+                    </Badge>
+                  ))}
+                </SimpleGrid>
+              </Collapse>
+              <Button
+                mt="sm" size="xs" variant="subtle" color="gray"
+                rightSection={
+                  <IconChevronDown
+                    size={14}
+                    style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform 180ms ease' }}
+                  />
+                }
+                onClick={() => setOpen((v) => !v)}
+              >
+                {open ? 'Zwiń' : `Pokaż więcej (${missedAll.length - sample.length})`}
+              </Button>
+            </>
+          )}
+        </>
+      )}
+    </Paper>
   );
 }

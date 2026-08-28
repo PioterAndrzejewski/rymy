@@ -3,14 +3,19 @@ import {
   Badge, Box, Button, Group, SimpleGrid, Stack, Text, UnstyledButton, Paper,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconDice5, IconMetronome, IconTargetArrow } from '@tabler/icons-react';
+import {
+  IconDice5, IconInfinity, IconListCheck, IconMetronome, IconStopwatch, IconTargetArrow,
+} from '@tabler/icons-react';
 import { WizardStepper, type StepDef } from '@/components/wizard/WizardStepper';
 import { StepShell, Section, WizardFooter } from '@/components/wizard/StepShell';
 import { ReadyPanel } from '@/components/wizard/ReadyPanel';
 import { ChoiceCard } from '@/components/wizard/ChoiceCard';
 import { RHYME_ENDINGS, rhymeCount, rhymeWords } from '@/wordbank/pl/rhymes';
 import { RhymeRun } from './family/RhymeRun';
-import { DURATIONS, defaultFamilyConfig, fmtDuration, type FamilyConfig } from './family/config';
+import {
+  DURATIONS, QUOTA_CHOICES, WORD_SECONDS_CHOICES, defaultFamilyConfig, fmtDuration,
+  minSecondsFor, rhymeWord, sessionModeLabel, type FamilyConfig,
+} from './family/config';
 
 const BPMS = [0, 60, 75, 90, 110];
 
@@ -38,8 +43,8 @@ export function RhymeFamily() {
     },
     {
       id: 'timer',
-      label: 'Czas',
-      hint: `${fmtDuration(config.seconds)}${config.bpm ? ` · ${config.bpm} BPM` : ''}`,
+      label: 'Tryb',
+      hint: `${sessionModeLabel(config)} · ${fmtDuration(config.seconds)}`,
       complete: true,
     },
     { id: 'start', label: 'Start', hint: undefined, complete: true },
@@ -121,8 +126,67 @@ export function RhymeFamily() {
       )}
 
       {step === 1 && (
-        <StepShell title="Czas i metronom" description="Ile trwa runda i czy chcesz mieć puls w tle.">
+        <StepShell title="Jak lecimy" description="Jedno słowo przez całą rundę, czy kolejka słów jedno po drugim.">
           <Stack gap="md">
+            <Section title="Tryb sesji">
+              <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
+                <ChoiceCard
+                  icon={<IconInfinity size={20} />}
+                  title="Jedno słowo"
+                  description="Cała runda na jednym słowie — ile rymów wyciśniesz."
+                  selected={config.sessionMode === 'single'}
+                  onSelect={() => patch({ sessionMode: 'single' })}
+                />
+                <ChoiceCard
+                  icon={<IconListCheck size={20} />}
+                  title="Kilka rymów i dalej"
+                  description="Dobijasz limit i wskakuje następne słowo. Wynik = ile słów zaliczysz."
+                  selected={config.sessionMode === 'quota'}
+                  onSelect={() => patch({ sessionMode: 'quota', seconds: minSecondsFor('quota', config.seconds) })}
+                >
+                  <Group gap="xs">
+                    {QUOTA_CHOICES.map((n) => (
+                      <Button
+                        key={n} size="xs"
+                        variant={config.quota === n ? 'filled' : 'default'}
+                        color="brand"
+                        onClick={() => patch({ quota: n })}
+                      >
+                        {n} {rhymeWord(n)}
+                      </Button>
+                    ))}
+                  </Group>
+                </ChoiceCard>
+                <ChoiceCard
+                  icon={<IconStopwatch size={20} />}
+                  title="Słowo na czas"
+                  description="Każde słowo dostaje swoje sekundy, potem następne — bez litości."
+                  selected={config.sessionMode === 'timed'}
+                  onSelect={() => patch({ sessionMode: 'timed', seconds: minSecondsFor('timed', config.seconds) })}
+                >
+                  <Group gap="xs">
+                    {WORD_SECONDS_CHOICES.map((n) => (
+                      <Button
+                        key={n} size="xs"
+                        variant={config.wordSeconds === n ? 'filled' : 'default'}
+                        color="brand"
+                        onClick={() => patch({ wordSeconds: n })}
+                      >
+                        {n} s
+                      </Button>
+                    ))}
+                  </Group>
+                </ChoiceCard>
+              </SimpleGrid>
+              {config.sessionMode !== 'single' && (
+                <Text size="xs" c="dimmed" mt="sm">
+                  {config.ending === 'random'
+                    ? 'Każde słowo to nowa rodzina rymów — losujemy ją w locie.'
+                    : `Każde słowo z rodziny -${config.ending}. Chcesz mieszać końcówki? Wybierz losową w poprzednim kroku.`}
+                </Text>
+              )}
+            </Section>
+
             <Section title="Długość rundy">
               <Group gap="xs" wrap="wrap">
                 {DURATIONS.map((sec) => (
@@ -167,6 +231,7 @@ export function RhymeFamily() {
             items={[
               { label: 'Końcówka', value: config.ending === 'random' ? 'losowa 🎲' : `-${config.ending}` },
               ...(sample ? [{ label: 'Np. rym do', value: sample }] : []),
+              { label: 'Tryb', value: sessionModeLabel(config) },
               { label: 'Czas', value: fmtDuration(config.seconds) },
               { label: 'Metronom', value: config.bpm === 0 ? 'wyłączony' : `${config.bpm} BPM` },
             ]}
